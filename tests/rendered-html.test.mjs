@@ -55,8 +55,8 @@ test("renders the complete 100-figure atlas and 18 editorial routes", async () =
   const html = await response.text();
   assert.equal(response.status, 200);
   assert.match(html, /100 философов · 700 идей · 2500 лет/);
-  assert.match(html, /18 редакционных маршрутов/);
-  assert.match(html, /ХРОНОЛОГИЧЕСКИЙ АТЛАС \/ 100/);
+  assert.match(html, /Темы философского маршрута/);
+  assert.match(html, /100 ФИЛОСОФОВ \/ ОТБОРНАЯ КАРТА/);
   assert.doesNotMatch(html, /из 50 мыслителей|Хронология 50 философов/);
 });
 
@@ -87,7 +87,7 @@ test("renders all 100 thinkers as a river linked to all ten chronological eras",
   assert.equal(riverEras.length, 1, "the river includes an era navigation strip");
   assert.equal(eraAnchors.length, 10, "every river marker has a timeline destination");
   assert.equal(riverPortraits.length, 100, "the full canon flows through the hero river");
-  assert.match(html, /100 философов.<br\/>Один ваш вопрос\./);
+  assert.match(html, /100 философов.<br\/>Ваш вопрос\./);
   assert.doesNotMatch(html, /spiral-portraits|spiral-line/);
 });
 

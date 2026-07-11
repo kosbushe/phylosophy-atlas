@@ -485,7 +485,7 @@ export default function Home() {
           <h1>
             100 философов.
             <br />
-            Один ваш вопрос.
+            Ваш вопрос.
           </h1>
           <p className="river-lead">
             Пройдите по реке времени и посмотрите, как менялись ответы на одни и те же
@@ -516,10 +516,6 @@ export default function Home() {
             </div>
           ) : (
             <div className="river-topic-picker" ref={themePicker}>
-              <div>
-                <strong>Выберите тему, а не пишите вопрос</strong>
-                <span>18 редакционных маршрутов</span>
-              </div>
               <div className="river-themes" role="group" aria-label="Темы философского маршрута">
                 {questionThemes.map((theme) => (
                   <button
@@ -534,7 +530,6 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-              <p>Маршрут соберёт 3–6 разных позиций и покажет, где философы спорят.</p>
             </div>
           )}
 

@@ -6474,6 +6474,38 @@ a {
   }
 }
 
+/* The topic controls live in a solid editorial field, never over the current. */
+.river-hero-copy {
+  background: linear-gradient(90deg, #151410 0%, #151410 83%, rgba(21, 20, 16, 0.94) 91%, transparent 100%);
+  isolation: isolate;
+  margin: -18px 0 0 -20px;
+  padding: 18px 34px 24px 20px;
+}
+
+.river-topic-picker {
+  background: #151410;
+  border: 1px solid rgba(241, 236, 226, 0.22);
+  margin-top: 22px;
+  max-width: 380px;
+  padding: 10px;
+}
+
+.river-topic-picker .river-themes {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .river-hero-copy {
+    background: #151410;
+    margin: 0;
+    padding: 58px 0 0;
+  }
+
+  .river-topic-picker {
+    max-width: none;
+  }
+}
+
 /* Legal and editorial policy */
 
 .legal-shell {
