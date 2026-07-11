@@ -90,6 +90,7 @@ test("renders all 100 thinkers as a river linked to all ten chronological eras",
   assert.match(html, /100 философов.<br\/>Ваш вопрос\./);
   assert.doesNotMatch(html, /spiral-portraits|spiral-line/);
   assert.doesNotMatch(html, /river-portrait-index/);
+  assert.doesNotMatch(html, /portrait-placeholder\.svg/);
 });
 
 test("publishes crawler discovery files for all 100 profiles", async () => {

@@ -205,8 +205,10 @@ export const portraitIndex: Partial<Record<string, PortraitReference>> = {
     "alt": "Портрет Рене Декарта кисти Франса Халса"
   },
   "zerayacob": {
-    "src": "/portrait-placeholder.svg",
-    "alt": "Условный силуэт: достоверное изображение Зэра Яыкоба неизвестно"
+    "src": "/portraits/zerayacob.webp",
+    "alt": "Позднее художественное изображение Зэра Яыкоба",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Zara_Yaqob.jpg"
   },
   "spinoza": {
     "src": "/portraits/spinoza.webp",
@@ -302,6 +304,90 @@ export const portraitIndex: Partial<Record<string, PortraitReference>> = {
     "alt": "Фотографический портрет Бён-Чхоль Хана, 2015 год",
     "credit": "ActuaLitté · CC BY-SA 2.0",
     "source": "https://commons.wikimedia.org/wiki/File:2015_Byung-Chul_Han_(3x4_cropped).jpg"
+  },
+  "sextus": {
+    "src": "/portraits/sextus.webp",
+    "alt": "Поздняя гравюра Секста Эмпирика",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Sextus.jpg"
+  },
+  "dignaga": {
+    "src": "/portraits/dignaga.webp",
+    "alt": "Традиционное изображение Дигнаги, обучающего буддийской логике",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:218_Dignaga_Teaching_Buddhist_Logic.jpg"
+  },
+  "dunsscotus": {
+    "src": "/portraits/dunsscotus.webp",
+    "alt": "Позднее художественное изображение Иоанна Дунса Скота",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Scoto_(Duns_Scoto).jpg"
+  },
+  "jung": {
+    "src": "/portraits/jung.webp",
+    "alt": "Фотографический портрет Карла Густава Юнга",
+    "credit": "ETH-Bibliothek Zürich · Wikimedia Commons",
+    "source": "https://commons.wikimedia.org/wiki/File:ETH-BIB-Jung,_Carl_Gustav_(1875-1961)-Portrait-Portr_14163_(cropped).tif"
+  },
+  "anscombe": {
+    "src": "/portraits/anscombe.webp",
+    "alt": "Фотографический портрет Гертруды Элизабет Маргарет Энском",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Elisabeth_Anscombe.jpg"
+  },
+  "kuhn": {
+    "src": "/portraits/kuhn.webp",
+    "alt": "Фотографический портрет Томаса Куна",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Thomas_Kuhn_(1977)_(cropped).jpg"
+  },
+  "deleuze": {
+    "src": "/portraits/deleuze.webp",
+    "alt": "Фотография Жиля Делёза с Феликсом Гваттари, 1976 год",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Gilles_Deleuze,_F%C3%A9lix_Guattari,_Antipsychiatrie_und_Wunsch%C3%B6konomie_1976.jpg"
+  },
+  "fanon": {
+    "src": "/portraits/fanon.webp",
+    "alt": "Фотографический портрет Франца Фанона",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Photograph_of_Frantz_Fanon_from_Black_Skin_White_Masks_(1967)_dust_jacket.webp"
+  },
+  "foucault": {
+    "src": "/portraits/foucault.webp",
+    "alt": "Фотографический портрет Мишеля Фуко, около 1970 года",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Photo_of_Michel_Foucault_on_1970_dustjacket_of_The_Order_of_Things.jpg"
+  },
+  "habermas": {
+    "src": "/portraits/habermas.webp",
+    "alt": "Фотографический портрет Юргена Хабермаса",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:JuergenHabermas_crop1.jpg"
+  },
+  "derrida": {
+    "src": "/portraits/derrida.webp",
+    "alt": "Фотографический портрет Жака Деррида",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Derrida_EHESS_(cropped).png"
+  },
+  "amartyasen": {
+    "src": "/portraits/amartyasen.webp",
+    "alt": "Фотографический портрет Амартии Сена",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Amartya_Sen_20071128_cologne_cropped.jpg"
+  },
+  "judithbutler": {
+    "src": "/portraits/judithbutler.webp",
+    "alt": "Фотографический портрет Джудит Батлер",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:JudithButler2013.jpg"
+  },
+  "mbembe": {
+    "src": "/portraits/mbembe.webp",
+    "alt": "Фотографический портрет Ашиля Мбембе",
+    "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
+    "source": "https://commons.wikimedia.org/wiki/File:Achille_Mbembe_2.JPG"
   },
   ...checkedSupplementPortraits,
 } as const;

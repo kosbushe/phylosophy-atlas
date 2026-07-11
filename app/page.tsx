@@ -323,34 +323,32 @@ const questionThemes: QuestionTheme[] = [
 ];
 
 const riverLandmarkSlugs = new Set([
-  "buddha",
   "confucius",
   "socrates",
-  "aristotle",
+  "avicenna",
   "kant",
   "nietzsche",
-  "byungchulhan",
 ]);
 
 function riverBaseline(progress: number) {
-  return 79 - progress * 59 + Math.sin(progress * Math.PI * 2.15) * 6;
+  return 84 - progress * 61 + Math.sin(progress * Math.PI * 2.15) * 5;
 }
 
 function createRiverPortraitPoints(count: number) {
-  const lanes = 4;
+  const lanes = 8;
   const columns = Math.ceil(count / lanes);
-  const laneOrder = [0.2, 2.7, 1.15, 3.65];
+  const laneOrder = [0.15, 5.6, 2.2, 7.15, 3.55, 0.95, 6.45, 4.55];
 
   return Array.from({ length: count }, (_, index) => {
     const lane = laneOrder[index % lanes];
     const column = Math.floor(index / lanes);
     const progress = column / Math.max(1, columns - 1);
-    const x = 5 + progress * 90 + Math.sin(index * 1.71) * 1.18;
+    const x = 4.5 + progress * 91 + Math.sin(index * 1.71) * 1.6;
     const y =
       riverBaseline(progress) +
-      (lane - 1.85) * 4.25 +
-      Math.sin(index * 2.17) * 1.25 +
-      Math.cos(index * 0.63) * 0.72;
+      (lane - 3.65) * 3.15 +
+      Math.sin(index * 2.17) * 1.6 +
+      Math.cos(index * 0.63) * 0.95;
     return { x, y };
   });
 }
@@ -553,17 +551,14 @@ export default function Home() {
             </div>
           )}
 
-          <a className="river-scroll-link" href="#canon-map">
-            <span>01</span> Пройти реку времени
-          </a>
         </div>
 
         <div className="river-stage" aria-label="Река времени: сто мыслителей в десяти эпохах">
           <svg className="river-bank" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 88 C16 79 22 80 32 71 C43 60 54 67 64 51 C73 37 72 27 100 8 L100 31 C82 42 82 53 68 66 C53 80 44 74 33 84 C22 94 15 92 0 99 Z" />
+            <path d="M0 64 C16 56 23 63 33 52 C44 40 55 51 66 32 C77 14 75 11 100 0 L100 37 C83 47 82 58 68 71 C53 87 45 79 33 90 C22 101 15 96 0 100 Z" />
           </svg>
           <svg className="river-current" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 93 C16 84 23 85 33 77 C44 66 55 72 66 57 C75 45 75 34 100 17" />
+            <path d="M0 86 C16 78 23 85 33 75 C44 63 55 73 66 54 C76 39 77 28 100 15" />
           </svg>
 
           <div className="river-portraits" aria-label="100 философов в хронологическом порядке">
