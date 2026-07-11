@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="title">
+  <title id="title">Условный силуэт философа</title>
+  <rect width="900" height="1200" fill="#e7decf"/>
+  <g fill="none" stroke="#81796e" stroke-width="3" opacity=".55">
+    <circle cx="450" cy="420" r="235"/>
+    <circle cx="450" cy="420" r="330" stroke-dasharray="8 15"/>
+    <path d="M80 1100C138 820 264 708 450 708s312 112 370 392"/>
+    <path d="M319 345c23-122 239-137 278-6 18 63 2 177-41 239-34 48-75 74-117 72-47-3-92-40-120-96-33-67-38-149 0-209Z"/>
+    <path d="M345 660c-6 76-38 113-91 143m301-143c6 76 38 113 91 143"/>
+  </g>
+  <g fill="#d43b2d">
+    <circle cx="450" cy="90" r="8"/>
+    <circle cx="450" cy="750" r="8"/>
+  </g>
+</svg>
