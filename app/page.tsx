@@ -330,25 +330,36 @@ const riverLandmarkSlugs = new Set([
   "nietzsche",
 ]);
 
+const riverLandmarkPositions: Record<string, { x: number; y: number }> = {
+  confucius: { x: 14, y: 64 },
+  socrates: { x: 25, y: 56 },
+  avicenna: { x: 53, y: 43 },
+  kant: { x: 66, y: 34 },
+  nietzsche: { x: 78, y: 27 },
+};
+
 function riverBaseline(progress: number) {
   return 84 - progress * 61 + Math.sin(progress * Math.PI * 2.15) * 5;
 }
 
 function createRiverPortraitPoints(count: number) {
-  const lanes = 8;
+  // Portraits move through a broad, staggered stream.  Keeping each column
+  // shallow prevents the beginning of the river from turning into a stack.
+  const lanes = 7;
   const columns = Math.ceil(count / lanes);
-  const laneOrder = [0.15, 5.6, 2.2, 7.15, 3.55, 0.95, 6.45, 4.55];
+  const laneOrder = [0.18, 5.75, 2.35, 6.15, 3.95, 0.9, 4.7];
 
   return Array.from({ length: count }, (_, index) => {
     const lane = laneOrder[index % lanes];
     const column = Math.floor(index / lanes);
     const progress = column / Math.max(1, columns - 1);
-    const x = 4.5 + progress * 91 + Math.sin(index * 1.71) * 1.6;
-    const y =
+    const x = 5 + progress * 90 + (lane - 3) * 0.62 + Math.sin(index * 1.71) * 0.8;
+    const y = Math.max(13, Math.min(94,
       riverBaseline(progress) +
-      (lane - 3.65) * 3.15 +
-      Math.sin(index * 2.17) * 1.6 +
-      Math.cos(index * 0.63) * 0.95;
+      (lane - 3) * 4.75 +
+      Math.sin(index * 2.17) * 1.05 +
+      Math.cos(index * 0.63) * 0.65
+    ));
     return { x, y };
   });
 }
@@ -563,7 +574,7 @@ export default function Home() {
 
           <div className="river-portraits" aria-label="100 философов в хронологическом порядке">
             {canonFigures.map((figure, index) => {
-              const point = riverPortraitPoints[index];
+              const point = riverLandmarkPositions[figure.id] ?? riverPortraitPoints[index];
               const isSelected = previewFigure?.id === figure.id;
               const isLandmark = riverLandmarkSlugs.has(figure.id);
               return (

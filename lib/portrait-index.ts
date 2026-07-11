@@ -343,9 +343,9 @@ export const portraitIndex: Partial<Record<string, PortraitReference>> = {
   },
   "deleuze": {
     "src": "/portraits/deleuze.webp",
-    "alt": "Фотография Жиля Делёза с Феликсом Гваттари, 1976 год",
+    "alt": "Фотографический портрет Жиля Делёза",
     "credit": "Wikimedia Commons; автор и лицензия указаны по ссылке",
-    "source": "https://commons.wikimedia.org/wiki/File:Gilles_Deleuze,_F%C3%A9lix_Guattari,_Antipsychiatrie_und_Wunsch%C3%B6konomie_1976.jpg"
+    "source": "https://commons.wikimedia.org/wiki/File:AVT_Gilles-Deleuze_6342.webp"
   },
   "fanon": {
     "src": "/portraits/fanon.webp",

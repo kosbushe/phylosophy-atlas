@@ -6571,6 +6571,42 @@ a {
   opacity: 1;
 }
 
+/* Keep the first stones above the era scale and let the river breathe. */
+.river-portraits {
+  bottom: 17%;
+}
+
+.river-eras {
+  bottom: 2.6%;
+}
+
+.river-portrait.is-landmark {
+  --portrait-size: 52px;
+}
+
+.river-portrait-image {
+  animation: river-portrait-drift 7s ease-in-out infinite;
+}
+
+.river-portrait:nth-child(3n) .river-portrait-image {
+  animation-delay: -2.4s;
+  animation-duration: 8.4s;
+}
+
+.river-portrait:nth-child(5n) .river-portrait-image {
+  animation-delay: -4.1s;
+  animation-duration: 6.4s;
+}
+
+@keyframes river-portrait-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .river-portrait-image { animation: none; }
+}
+
 @media (max-width: 760px) {
   .river-hero-copy {
     background: transparent;
@@ -7234,4 +7270,105 @@ a {
   .home-v2-topic-picker .home-v2-themes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* Final river pass: the chronology is a calm shoreline, never a layer under
+   portraits. The faces use a staggered current rather than a rigid grid. */
+.river-hero-copy {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.river-topic-picker {
+  background: transparent;
+  border: 0;
+  margin-top: 17px;
+  padding: 0;
+}
+
+.river-topics-trigger {
+  font-size: 14px;
+  padding-bottom: 5px;
+}
+
+.river-topic-picker .river-themes {
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.38);
+}
+
+.river-portraits {
+  bottom: 22%;
+}
+
+.river-eras {
+  bottom: 2.8%;
+  z-index: 12;
+}
+
+.river-bank path {
+  fill: rgba(231, 224, 208, 0.12);
+  stroke: none;
+}
+
+.river-current path {
+  filter: drop-shadow(0 0 7px rgba(220, 73, 55, 0.3));
+  opacity: 0.72;
+  stroke-width: 0.16;
+}
+
+.river-portrait {
+  opacity: 0.87;
+}
+
+.river-portrait:nth-child(4n + 1) { --portrait-size: 21px; }
+.river-portrait:nth-child(4n + 2) { --portrait-size: 27px; }
+.river-portrait:nth-child(4n + 3) { --portrait-size: 24px; }
+.river-portrait:nth-child(4n + 4) { --portrait-size: 19px; }
+.river-portrait:nth-child(7n + 1) { --portrait-size: 29px; }
+.river-portrait.is-landmark { --portrait-size: 52px; opacity: 1; }
+.river-portrait.is-relevant { --portrait-size: 37px; opacity: 1; }
+
+.river-portrait-image {
+  animation: river-portrait-drift 7s ease-in-out infinite;
+  box-shadow: 0 0 0 1px rgba(21, 20, 16, 0.92);
+  will-change: transform;
+}
+
+.river-portrait:nth-child(3n) .river-portrait-image {
+  animation-delay: -2.4s;
+  animation-duration: 8.4s;
+}
+
+.river-portrait:nth-child(5n) .river-portrait-image {
+  animation-delay: -4.1s;
+  animation-duration: 6.4s;
+}
+
+.river-portrait:hover,
+.river-portrait:focus-visible,
+.river-portrait.is-selected {
+  opacity: 1;
+}
+
+@keyframes river-portrait-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
+}
+
+@media (max-width: 760px) {
+  .river-hero-copy {
+    background: transparent;
+    margin: 0;
+    padding: 58px 0 0;
+  }
+
+  .river-portraits {
+    bottom: 0;
+  }
+
+  .river-portrait.is-landmark { --portrait-size: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .river-portrait-image { animation: none; }
 }
