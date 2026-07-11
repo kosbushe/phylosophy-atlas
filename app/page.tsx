@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import CanonMap from "@/components/CanonMap";
-import { canonEras, canonFigures } from "@/lib/canon";
+import { canonEras, canonFigures, canonTraditions } from "@/lib/canon";
 import { portraitIndex, portraitThumbnail } from "@/lib/portrait-index";
 
 type QuestionTheme = {
@@ -322,59 +322,21 @@ const questionThemes: QuestionTheme[] = [
   },
 ];
 
-const riverLandmarkSlugs = new Set([
-  "confucius",
-  "socrates",
-  "avicenna",
-  "kant",
-  "nietzsche",
-]);
+const eraByFigureId = new Map(
+  canonEras.flatMap((era) => era.figures.map((figure) => [figure.id, era] as const)),
+);
 
-const riverLandmarkPositions: Record<string, { x: number; y: number }> = {
-  confucius: { x: 14, y: 64 },
-  socrates: { x: 25, y: 56 },
-  avicenna: { x: 53, y: 43 },
-  kant: { x: 66, y: 34 },
-  nietzsche: { x: 78, y: 27 },
-};
-
-function riverBaseline(progress: number) {
-  return 84 - progress * 61 + Math.sin(progress * Math.PI * 2.15) * 5;
-}
-
-function createRiverPortraitPoints(count: number) {
-  // Portraits move through a broad, staggered stream.  Keeping each column
-  // shallow prevents the beginning of the river from turning into a stack.
-  const lanes = 7;
-  const columns = Math.ceil(count / lanes);
-  const laneOrder = [0.18, 5.75, 2.35, 6.15, 3.95, 0.9, 4.7];
-
-  return Array.from({ length: count }, (_, index) => {
-    const lane = laneOrder[index % lanes];
-    const column = Math.floor(index / lanes);
-    const progress = column / Math.max(1, columns - 1);
-    const x = 5 + progress * 90 + (lane - 3) * 0.62 + Math.sin(index * 1.71) * 0.8;
-    const y = Math.max(13, Math.min(94,
-      riverBaseline(progress) +
-      (lane - 3) * 4.75 +
-      Math.sin(index * 2.17) * 1.05 +
-      Math.cos(index * 0.63) * 0.65
-    ));
-    return { x, y };
-  });
-}
-
-const riverPortraitPoints = createRiverPortraitPoints(canonFigures.length);
+const atlasTraditions = canonTraditions.filter((tradition) => tradition !== "Все");
 
 export default function Home() {
   const themePicker = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const [activeThemeId, setActiveThemeId] = useState<string | null>(null);
-  const [routeNotice, setRouteNotice] = useState<string | null>(null);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [topicsOpen, setTopicsOpen] = useState(false);
+  const [activeEraId, setActiveEraId] = useState<string | null>(null);
+  const [activeTradition, setActiveTradition] = useState<string | null>(null);
 
   const activeTheme = questionThemes.find((theme) => theme.id === activeThemeId) ?? null;
   const highlightedSlugs = activeTheme?.philosophers.map((item) => item.slug) ?? [];
@@ -385,6 +347,12 @@ export default function Home() {
   const previewFigure =
     canonFigures.find((figure) => figure.id === selectedSlug) ?? null;
   const hasRoute = routeFigures.length > 0;
+  const visibleFigures = canonFigures.filter((figure) => {
+    const eraMatches = !activeEraId || eraByFigureId.get(figure.id)?.id === activeEraId;
+    const traditionMatches = !activeTradition || figure.tradition === activeTradition;
+    const routeMatches = !hasRoute || highlightedSet.has(figure.id);
+    return eraMatches && traditionMatches && routeMatches;
+  });
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -402,18 +370,18 @@ export default function Home() {
 
   function selectTheme(theme: QuestionTheme) {
     setActiveThemeId(theme.id);
-    setRouteNotice(theme.question);
-    setQuery(theme.label);
     setSelectedSlug(null);
     setTopicsOpen(false);
+    setActiveEraId(null);
+    setActiveTradition(null);
   }
 
   function clearRoute() {
     setActiveThemeId(null);
-    setRouteNotice(null);
     setSelectedSlug(null);
-    setQuery("");
     setTopicsOpen(true);
+    setActiveEraId(null);
+    setActiveTradition(null);
     window.setTimeout(() => themePicker.current?.querySelector("button")?.focus(), 0);
   }
 
@@ -443,6 +411,20 @@ export default function Home() {
       () => themePicker.current?.querySelector("button")?.focus(),
       reducedMotion ? 0 : 350,
     );
+  }
+
+  function selectEra(eraId: string) {
+    setActiveEraId((current) => (current === eraId ? null : eraId));
+    setActiveTradition(null);
+    setActiveThemeId(null);
+    setSelectedSlug(null);
+  }
+
+  function selectTradition(tradition: string) {
+    setActiveTradition((current) => (current === tradition ? null : tradition));
+    setActiveEraId(null);
+    setActiveThemeId(null);
+    setSelectedSlug(null);
   }
 
   return (
@@ -494,128 +476,100 @@ export default function Home() {
         </button>
       </header>
 
-      <section
-        className={`home-v2-hero river-hero ${previewFigure ? "has-preview" : ""}`}
-        id="ask"
-      >
-        <div className="river-hero-copy">
-          <p className="river-kicker">ФИЛОСОФСКАЯ КАРТА / 100 философов · 700 идей · 2500 лет</p>
-          <h1>
-            100 философов.
-            <br />
-            Ваш вопрос.
-          </h1>
-          <p className="river-lead">
-            Войдите в реку времени — и посмотрите, как сто мыслителей спорят об одних
-            и тех же человеческих вопросах.
+      <section className={`home-v2-hero atlas-hero ${previewFigure ? "has-preview" : ""}`} id="ask">
+        <div className="atlas-intro">
+          <p className="atlas-kicker">ФИЛОСОФСКАЯ КАРТА / 100 МЫСЛИТЕЛЕЙ · 700 ИДЕЙ · 10 ЭПОХ · 2500 ЛЕТ</p>
+          <h1>Философия —<br />это не линия.</h1>
+          <p className="atlas-lead">
+            Это большое поле несогласия. Выберите эпоху, традицию или человеческий
+            вопрос — и откройте того, с кем хочется поспорить.
           </p>
 
-          {!hasRoute && !topicsOpen ? (
-            <div className="river-entry">
-              <button type="button" onClick={focusQuestion}>
-                <span>01</span>
-                Выбрать тему
-                <b aria-hidden="true">↓</b>
-              </button>
-              <p>18 маршрутов для исследования</p>
-            </div>
-          ) : null}
-
-          {hasRoute ? (
-            <div className="river-route" aria-live="polite">
-              <div>
-                <span>Маршрут по теме · {routeFigures.length} позиций</span>
-                <button type="button" onClick={clearRoute}>Все темы</button>
-              </div>
-              <strong>{query}</strong>
-              <p>{routeNotice} Здесь нет автоматического «правильного ответа».</p>
-              <div className="river-route-steps" aria-label="Подобранные философы">
-                {routeFigures.map((figure, index) => (
+          <div className="atlas-topic-picker" ref={themePicker}>
+            <button
+              className="atlas-topics-trigger"
+              type="button"
+              onClick={() => setTopicsOpen((isOpen) => !isOpen)}
+              aria-expanded={topicsOpen}
+              aria-controls="atlas-themes"
+            >
+              <span>18 маршрутов по вопросам</span><b>{topicsOpen ? "−" : "+"}</b>
+            </button>
+            {topicsOpen ? (
+              <div className="atlas-themes" id="atlas-themes" role="group" aria-label="Темы философского маршрута">
+                {questionThemes.map((theme) => (
                   <button
-                    className={selectedSlug === figure.id ? "is-active" : ""}
-                    key={figure.id}
+                    className={activeThemeId === theme.id ? "is-active" : ""}
+                    key={theme.id}
                     type="button"
-                    onClick={() => setSelectedSlug(figure.id)}
+                    onClick={() => selectTheme(theme)}
+                    aria-pressed={activeThemeId === theme.id}
+                    title={theme.question}
                   >
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    {figure.name}
+                    {theme.label}
                   </button>
                 ))}
               </div>
-            </div>
-          ) : (
-            <div className="river-topic-picker" ref={themePicker}>
-              <button
-                className="river-topics-trigger"
-                type="button"
-                onClick={() => setTopicsOpen((isOpen) => !isOpen)}
-                aria-expanded={topicsOpen}
-                aria-controls="river-themes"
-              >
-                Темы для исследования <span>{topicsOpen ? "−" : "+"}</span>
-              </button>
-              {topicsOpen ? (
-                <div className="river-themes" id="river-themes" role="group" aria-label="Темы философского маршрута">
-                  {questionThemes.map((theme) => (
-                    <button
-                      className={activeThemeId === theme.id ? "is-active" : ""}
-                      key={theme.id}
-                      type="button"
-                      onClick={() => selectTheme(theme)}
-                      aria-pressed={activeThemeId === theme.id}
-                      title={theme.question}
-                    >
-                      {theme.label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          )}
-
+            ) : null}
+          </div>
         </div>
 
-        <div className="river-stage" aria-label="Река времени: сто мыслителей в десяти эпохах">
-          <div className="river-stage-note" aria-hidden="true">
-            <span>2500 лет разговора</span>
-            <i />
+        <div className="atlas-field" aria-label="Интерактивное поле ста философов">
+          <div className="atlas-field-topline">
+            <span>КЛИКНИТЕ НА ЛЮБОЙ ПОРТРЕТ</span>
+            <button
+              className="atlas-reset"
+              type="button"
+              onClick={clearRoute}
+              hidden={!activeEraId && !activeTradition && !hasRoute}
+            >
+              Сбросить выбор
+            </button>
           </div>
-          <svg className="river-bank" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 64 C16 56 23 63 33 52 C44 40 55 51 66 32 C77 14 75 11 100 0 L100 37 C83 47 82 58 68 71 C53 87 45 79 33 90 C22 101 15 96 0 100 Z" />
-          </svg>
-          <svg className="river-current" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 86 C16 78 23 85 33 75 C44 63 55 73 66 54 C76 39 77 28 100 15" />
-          </svg>
 
-          <div className="river-portraits" aria-label="100 философов в хронологическом порядке">
-            {canonFigures.map((figure, index) => {
-              const point = riverLandmarkPositions[figure.id] ?? riverPortraitPoints[index];
+          <div className="atlas-era-switcher" aria-label="Фильтр по эпохам">
+            {canonEras.map((era) => (
+              <button
+                className={activeEraId === era.id ? "is-active" : ""}
+                key={era.id}
+                type="button"
+                onClick={() => selectEra(era.id)}
+                aria-pressed={activeEraId === era.id}
+                title={`${era.title}: ${era.dates}`}
+              >
+                <span>{era.index}</span>
+                <strong>{era.title}</strong>
+              </button>
+            ))}
+          </div>
+
+          <div className="atlas-figure-grid" aria-live="polite">
+            {visibleFigures.map((figure, index) => {
+              const era = eraByFigureId.get(figure.id);
               const isSelected = previewFigure?.id === figure.id;
-              const isLandmark = riverLandmarkSlugs.has(figure.id);
               return (
                 <Link
                   className={[
-                    "river-portrait",
-                    isLandmark ? "is-landmark" : "",
+                    "atlas-figure",
                     isSelected ? "is-selected" : "",
                     highlightedSet.has(figure.id) ? "is-relevant" : "",
                   ].filter(Boolean).join(" ")}
                   href={`/${figure.id}`}
                   key={figure.id}
-                  style={{ left: `${point.x}%`, top: `${point.y}%` }}
-                  aria-label={`${figure.index}. ${figure.name}, ${figure.dates}. Открыть краткую карточку.`}
+                  aria-label={`${figure.index}. ${figure.name}, ${figure.dates}. ${era?.title ?? ""}. Открыть карточку.`}
                   aria-expanded={isSelected}
                   aria-controls="philosopher-preview"
                   onClick={(event) => openPortrait(event, figure.id)}
                 >
-                  <span className="river-portrait-image" data-initial={figure.name.slice(0, 1)}>
+                  <span className="atlas-figure-number">{figure.index}</span>
+                  <span className="atlas-figure-portrait" data-initial={figure.name.slice(0, 1)}>
                     {portraitIndex[figure.id] ? (
                       <img
                         src={portraitThumbnail(portraitIndex[figure.id])}
                         alt=""
                         width={320}
                         height={320}
-                        loading={index < 20 ? "eager" : "lazy"}
+                        loading={index < 24 ? "eager" : "lazy"}
                         referrerPolicy="no-referrer"
                         onError={(event) => {
                           event.currentTarget.onerror = null;
@@ -624,27 +578,34 @@ export default function Home() {
                       />
                     ) : null}
                   </span>
-                  {isLandmark ? <em>{figure.name}</em> : null}
+                  <span className="atlas-figure-name">{figure.name}</span>
+                  <span className="atlas-figure-meta">{era?.index} · {figure.tradition}</span>
                 </Link>
               );
             })}
           </div>
 
-          <div className="river-eras" aria-label="Эпохи">
-            {canonEras.map((era) => (
-              <a href={`#era-${era.id}`} key={era.id}>
-                <span>{era.index}</span>
-                <strong>{era.title}</strong>
-                <small>{era.dates}</small>
-                <i aria-hidden="true" />
-              </a>
-            ))}
+          <div className="atlas-tradition-rail" aria-label="Фильтр по традициям">
+            <span>ТРАДИЦИИ</span>
+            <div>
+              {atlasTraditions.map((tradition) => (
+                <button
+                  className={activeTradition === tradition ? "is-active" : ""}
+                  key={tradition}
+                  type="button"
+                  onClick={() => selectTradition(tradition)}
+                  aria-pressed={activeTradition === tradition}
+                >
+                  {tradition}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {previewFigure ? (
           <aside
-            className="home-v2-preview-card is-pinned"
+            className="home-v2-preview-card atlas-preview-card"
             id="philosopher-preview"
             aria-label={`Кратко о философе: ${previewFigure.name}`}
           >
