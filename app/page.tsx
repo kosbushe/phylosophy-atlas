@@ -506,9 +506,20 @@ export default function Home() {
             Ваш вопрос.
           </h1>
           <p className="river-lead">
-            Пройдите по реке времени и посмотрите, как менялись ответы на одни и те же
-            человеческие вопросы.
+            Войдите в реку времени — и посмотрите, как сто мыслителей спорят об одних
+            и тех же человеческих вопросах.
           </p>
+
+          {!hasRoute && !topicsOpen ? (
+            <div className="river-entry">
+              <button type="button" onClick={focusQuestion}>
+                <span>01</span>
+                Выбрать тему
+                <b aria-hidden="true">↓</b>
+              </button>
+              <p>18 маршрутов для исследования</p>
+            </div>
+          ) : null}
 
           {hasRoute ? (
             <div className="river-route" aria-live="polite">
@@ -565,6 +576,10 @@ export default function Home() {
         </div>
 
         <div className="river-stage" aria-label="Река времени: сто мыслителей в десяти эпохах">
+          <div className="river-stage-note" aria-hidden="true">
+            <span>2500 лет разговора</span>
+            <i />
+          </div>
           <svg className="river-bank" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             <path d="M0 64 C16 56 23 63 33 52 C44 40 55 51 66 32 C77 14 75 11 100 0 L100 37 C83 47 82 58 68 71 C53 87 45 79 33 90 C22 101 15 96 0 100 Z" />
           </svg>

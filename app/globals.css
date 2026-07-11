@@ -6607,6 +6607,249 @@ a {
   .river-portrait-image { animation: none; }
 }
 
+/* Art direction — the home page is an invitation into a living chronology. */
+.home-v2-hero.river-hero {
+  background:
+    radial-gradient(ellipse 55% 80% at 85% 43%, rgba(230, 219, 196, 0.075), transparent 68%),
+    radial-gradient(circle at 19% 15%, rgba(227, 74, 54, 0.11), transparent 25%),
+    linear-gradient(118deg, #151410 0%, #171613 52%, #20201b 100%);
+  min-height: clamp(780px, calc(100svh - 80px), 980px);
+}
+
+.river-hero-copy {
+  left: clamp(28px, 7.2vw, 122px);
+  max-width: 420px;
+  top: clamp(72px, 11.5%, 124px);
+  width: min(420px, 29vw);
+  z-index: 35;
+}
+
+.river-kicker {
+  align-items: center;
+  display: flex;
+  font-size: 9px;
+  gap: 11px;
+  letter-spacing: 0.17em;
+  margin-bottom: 27px;
+}
+
+.river-kicker::before {
+  background: #ef6a59;
+  content: "";
+  height: 6px;
+  width: 6px;
+}
+
+.river-hero-copy h1 {
+  font-size: clamp(62px, 5.8vw, 104px);
+  letter-spacing: -0.072em;
+  line-height: 0.83;
+  text-wrap: balance;
+}
+
+.river-lead {
+  border-left: 1px solid rgba(239, 106, 89, 0.8);
+  color: rgba(241, 236, 226, 0.76);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 31px;
+  max-width: 335px;
+  padding-left: 15px;
+}
+
+.river-entry {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  margin-top: 25px;
+}
+
+.river-entry button {
+  align-items: center;
+  background: #ef4c38;
+  border: 1px solid #ef4c38;
+  color: #fffaf0;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 11px;
+  gap: 10px;
+  letter-spacing: 0.04em;
+  padding: 12px 13px 12px 11px;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.river-entry button span {
+  color: rgba(255, 250, 240, 0.65);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.river-entry button b {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 0.6;
+}
+
+.river-entry button:hover,
+.river-entry button:focus-visible {
+  background: transparent;
+  color: #ef6a59;
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.river-entry button:hover span,
+.river-entry button:focus-visible span {
+  color: rgba(239, 106, 89, 0.66);
+}
+
+.river-entry p {
+  color: rgba(241, 236, 226, 0.48);
+  font-size: 10px;
+  line-height: 1.35;
+  margin: 0;
+  max-width: 105px;
+}
+
+.river-stage {
+  inset: 0 clamp(20px, 3.2vw, 62px) 0 clamp(20px, 3.2vw, 62px);
+  isolation: isolate;
+}
+
+.river-stage::after {
+  background:
+    linear-gradient(90deg, #151410 0%, rgba(21, 20, 16, 0.96) 20%, transparent 44%),
+    linear-gradient(0deg, rgba(21, 20, 16, 0.88) 0%, transparent 20%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+}
+
+.river-stage-note {
+  align-items: center;
+  color: rgba(241, 236, 226, 0.4);
+  display: flex;
+  font-size: 9px;
+  gap: 10px;
+  letter-spacing: 0.14em;
+  position: absolute;
+  right: 2.5%;
+  text-transform: uppercase;
+  top: 5.5%;
+  z-index: 9;
+}
+
+.river-stage-note i {
+  background: #ef6a59;
+  border-radius: 50%;
+  display: block;
+  height: 5px;
+  width: 5px;
+}
+
+.river-bank {
+  opacity: 0.95;
+}
+
+.river-bank path {
+  fill: rgba(236, 227, 209, 0.095);
+  stroke: none;
+}
+
+.river-current path {
+  animation: river-current-pulse 8s ease-in-out infinite;
+  stroke: #ec5a47;
+  stroke-width: 0.13;
+}
+
+@keyframes river-current-pulse {
+  0%, 100% { opacity: 0.44; }
+  50% { opacity: 0.82; }
+}
+
+.river-portraits {
+  bottom: 19%;
+  z-index: 7;
+}
+
+.river-portrait {
+  filter: saturate(0.75);
+}
+
+.river-portrait-image {
+  background: #ddd4c4;
+  border-color: rgba(244, 238, 227, 0.8);
+  box-shadow: 0 0 0 1px rgba(13, 13, 12, 0.86), 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.river-portrait-image img {
+  filter: grayscale(1) sepia(0.12) contrast(1.18) brightness(1.06);
+}
+
+.river-portrait.is-landmark {
+  --portrait-size: 50px;
+}
+
+.river-portrait.is-landmark em {
+  background: transparent;
+  color: rgba(241, 236, 226, 0.87);
+  font-size: 11px;
+  padding: 0;
+  text-shadow: 0 2px 12px #151410;
+}
+
+.river-eras {
+  bottom: 3.2%;
+  left: 5.2%;
+  right: 2.5%;
+  z-index: 13;
+}
+
+.river-eras a {
+  border-left-color: rgba(241, 236, 226, 0.18);
+  min-height: 68px;
+  padding: 10px 8px 0;
+}
+
+.river-eras strong {
+  font-size: 10px;
+  letter-spacing: -0.015em;
+}
+
+@media (max-width: 1100px) {
+  .river-hero-copy { width: min(390px, 36vw); }
+  .river-hero-copy h1 { font-size: clamp(58px, 6.2vw, 82px); }
+  .river-entry { gap: 12px; }
+}
+
+@media (max-width: 760px) {
+  .home-v2-hero.river-hero {
+    min-height: 0;
+  }
+
+  .river-hero-copy {
+    left: 0;
+    padding: 56px 0 0;
+    position: relative;
+    top: auto;
+    width: 100%;
+  }
+
+  .river-kicker { font-size: 8px; margin-bottom: 21px; }
+  .river-lead { margin-top: 24px; max-width: 340px; }
+  .river-entry { margin-bottom: 2px; }
+  .river-stage-note { display: none; }
+  .river-stage::after { background: linear-gradient(0deg, rgba(21, 20, 16, 0.24), transparent); }
+  .river-current path { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .river-current path { animation: none; }
+}
+
 @media (max-width: 760px) {
   .river-hero-copy {
     background: transparent;
