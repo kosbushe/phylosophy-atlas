@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import CanonMap from "@/components/CanonMap";
-import { canonEras, canonFigures, canonTraditions } from "@/lib/canon";
+import { canonEras, canonFigures } from "@/lib/canon";
 import { portraitIndex, portraitThumbnail } from "@/lib/portrait-index";
 
 type QuestionTheme = {
@@ -322,11 +322,13 @@ const questionThemes: QuestionTheme[] = [
   },
 ];
 
+const portalFigures = ["buddha", "socrates", "avicenna", "kant", "beauvoir"]
+  .map((id) => canonFigures.find((figure) => figure.id === id))
+  .filter((figure): figure is (typeof canonFigures)[number] => Boolean(figure));
+
 const eraByFigureId = new Map(
   canonEras.flatMap((era) => era.figures.map((figure) => [figure.id, era] as const)),
 );
-
-const atlasTraditions = canonTraditions.filter((tradition) => tradition !== "Все");
 
 export default function Home() {
   const themePicker = useRef<HTMLDivElement>(null);
@@ -335,24 +337,13 @@ export default function Home() {
   const [activeThemeId, setActiveThemeId] = useState<string | null>(null);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [topicsOpen, setTopicsOpen] = useState(false);
-  const [activeEraId, setActiveEraId] = useState<string | null>(null);
-  const [activeTradition, setActiveTradition] = useState<string | null>(null);
 
   const activeTheme = questionThemes.find((theme) => theme.id === activeThemeId) ?? null;
   const highlightedSlugs = activeTheme?.philosophers.map((item) => item.slug) ?? [];
   const highlightedSet = new Set(highlightedSlugs);
-  const routeFigures = highlightedSlugs
-    .map((slug) => canonFigures.find((figure) => figure.id === slug))
-    .filter((figure): figure is (typeof canonFigures)[number] => Boolean(figure));
   const previewFigure =
     canonFigures.find((figure) => figure.id === selectedSlug) ?? null;
-  const hasRoute = routeFigures.length > 0;
-  const visibleFigures = canonFigures.filter((figure) => {
-    const eraMatches = !activeEraId || eraByFigureId.get(figure.id)?.id === activeEraId;
-    const traditionMatches = !activeTradition || figure.tradition === activeTradition;
-    const routeMatches = !hasRoute || highlightedSet.has(figure.id);
-    return eraMatches && traditionMatches && routeMatches;
-  });
+  const hasRoute = highlightedSlugs.length > 0;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -372,17 +363,12 @@ export default function Home() {
     setActiveThemeId(theme.id);
     setSelectedSlug(null);
     setTopicsOpen(false);
-    setActiveEraId(null);
-    setActiveTradition(null);
   }
 
   function clearRoute() {
     setActiveThemeId(null);
     setSelectedSlug(null);
-    setTopicsOpen(true);
-    setActiveEraId(null);
-    setActiveTradition(null);
-    window.setTimeout(() => themePicker.current?.querySelector("button")?.focus(), 0);
+    setTopicsOpen(false);
   }
 
   function openPortrait(event: MouseEvent<HTMLAnchorElement>, slug: string) {
@@ -411,20 +397,6 @@ export default function Home() {
       () => themePicker.current?.querySelector("button")?.focus(),
       reducedMotion ? 0 : 350,
     );
-  }
-
-  function selectEra(eraId: string) {
-    setActiveEraId((current) => (current === eraId ? null : eraId));
-    setActiveTradition(null);
-    setActiveThemeId(null);
-    setSelectedSlug(null);
-  }
-
-  function selectTradition(tradition: string) {
-    setActiveTradition((current) => (current === tradition ? null : tradition));
-    setActiveEraId(null);
-    setActiveThemeId(null);
-    setSelectedSlug(null);
   }
 
   return (
@@ -476,27 +448,31 @@ export default function Home() {
         </button>
       </header>
 
-      <section className={`home-v2-hero atlas-hero ${previewFigure ? "has-preview" : ""}`} id="ask">
-        <div className="atlas-intro">
-          <p className="atlas-kicker">ФИЛОСОФСКАЯ КАРТА / 100 МЫСЛИТЕЛЕЙ · 700 ИДЕЙ · 10 ЭПОХ · 2500 ЛЕТ</p>
-          <h1>Философия —<br />это не линия.</h1>
-          <p className="atlas-lead">
-            Это большое поле несогласия. Выберите эпоху, традицию или человеческий
-            вопрос — и откройте того, с кем хочется поспорить.
+      <section className={`home-v2-hero portal-hero ${previewFigure ? "has-preview" : ""}`} id="ask">
+        <div className="portal-copy">
+          <p className="portal-kicker">ФИЛОСОФСКАЯ КАРТА · 100 ФИЛОСОФОВ · 2500 ЛЕТ РАЗГОВОРА</p>
+          <h1>
+            Сто способов
+            <br />
+            <i>увидеть мир.</i>
+          </h1>
+          <p className="portal-lead">
+            Не энциклопедия имён. Пространство, в котором Будда, Сократ, Авиценна,
+            Кант и де Бовуар спорят о том, как жить, любить, бояться и быть свободным.
           </p>
 
-          <div className="atlas-topic-picker" ref={themePicker}>
-            <button
-              className="atlas-topics-trigger"
-              type="button"
-              onClick={() => setTopicsOpen((isOpen) => !isOpen)}
-              aria-expanded={topicsOpen}
-              aria-controls="atlas-themes"
-            >
-              <span>18 маршрутов по вопросам</span><b>{topicsOpen ? "−" : "+"}</b>
-            </button>
+          <div className="portal-actions">
+            <a href="#canon-map">Войти в атлас <span>100 мыслителей →</span></a>
+            <button type="button" onClick={focusQuestion}>Выбрать вопрос <span>18 маршрутов</span></button>
+          </div>
+
+          <div className="portal-topic-picker" ref={themePicker}>
             {topicsOpen ? (
-              <div className="atlas-themes" id="atlas-themes" role="group" aria-label="Темы философского маршрута">
+              <div className="portal-themes" id="portal-themes" role="group" aria-label="Темы философского маршрута">
+                <div>
+                  <span>ВЫБЕРИТЕ ВОПРОС</span>
+                  {hasRoute ? <button type="button" onClick={clearRoute}>Сбросить</button> : null}
+                </div>
                 {questionThemes.map((theme) => (
                   <button
                     className={activeThemeId === theme.id ? "is-active" : ""}
@@ -511,65 +487,39 @@ export default function Home() {
                 ))}
               </div>
             ) : null}
+            {activeTheme ? <p className="portal-route-note">{activeTheme.question}</p> : null}
           </div>
         </div>
 
-        <div className="atlas-field" aria-label="Интерактивное поле ста философов">
-          <div className="atlas-field-topline">
-            <span>КЛИКНИТЕ НА ЛЮБОЙ ПОРТРЕТ</span>
-            <button
-              className="atlas-reset"
-              type="button"
-              onClick={clearRoute}
-              hidden={!activeEraId && !activeTradition && !hasRoute}
-            >
-              Сбросить выбор
-            </button>
-          </div>
-
-          <div className="atlas-era-switcher" aria-label="Фильтр по эпохам">
-            {canonEras.map((era) => (
-              <button
-                className={activeEraId === era.id ? "is-active" : ""}
-                key={era.id}
-                type="button"
-                onClick={() => selectEra(era.id)}
-                aria-pressed={activeEraId === era.id}
-                title={`${era.title}: ${era.dates}`}
-              >
-                <span>{era.index}</span>
-                <strong>{era.title}</strong>
-              </button>
-            ))}
-          </div>
-
-          <div className="atlas-figure-grid" aria-live="polite">
-            {visibleFigures.map((figure, index) => {
+        <div className="portal-stage" aria-label="Пять голосов философской карты">
+          <p className="portal-stage-note">ПОРТРЕТЫ — ПУНКТЫ ВХОДА В АТЛАС</p>
+          <div className="portal-portraits">
+            {portalFigures.map((figure, index) => {
               const era = eraByFigureId.get(figure.id);
               const isSelected = previewFigure?.id === figure.id;
               return (
                 <Link
                   className={[
-                    "atlas-figure",
+                    "portal-portrait",
                     isSelected ? "is-selected" : "",
                     highlightedSet.has(figure.id) ? "is-relevant" : "",
                   ].filter(Boolean).join(" ")}
                   href={`/${figure.id}`}
                   key={figure.id}
-                  aria-label={`${figure.index}. ${figure.name}, ${figure.dates}. ${era?.title ?? ""}. Открыть карточку.`}
+                  aria-label={`${figure.name}. Открыть краткую карточку.`}
                   aria-expanded={isSelected}
                   aria-controls="philosopher-preview"
                   onClick={(event) => openPortrait(event, figure.id)}
                 >
-                  <span className="atlas-figure-number">{figure.index}</span>
-                  <span className="atlas-figure-portrait" data-initial={figure.name.slice(0, 1)}>
+                  <span className="portal-portrait-index">{figure.index}</span>
+                  <span className="portal-portrait-image" data-initial={figure.name.slice(0, 1)}>
                     {portraitIndex[figure.id] ? (
                       <img
                         src={portraitThumbnail(portraitIndex[figure.id])}
                         alt=""
-                        width={320}
-                        height={320}
-                        loading={index < 24 ? "eager" : "lazy"}
+                        width={520}
+                        height={690}
+                        loading={index === 0 ? "eager" : "lazy"}
                         referrerPolicy="no-referrer"
                         onError={(event) => {
                           event.currentTarget.onerror = null;
@@ -578,28 +528,21 @@ export default function Home() {
                       />
                     ) : null}
                   </span>
-                  <span className="atlas-figure-name">{figure.name}</span>
-                  <span className="atlas-figure-meta">{era?.index} · {figure.tradition}</span>
+                  <span className="portal-portrait-copy">
+                    <strong>{figure.name}</strong>
+                    <small>{era?.index} · {figure.tradition}</small>
+                  </span>
                 </Link>
               );
             })}
           </div>
-
-          <div className="atlas-tradition-rail" aria-label="Фильтр по традициям">
-            <span>ТРАДИЦИИ</span>
-            <div>
-              {atlasTraditions.map((tradition) => (
-                <button
-                  className={activeTradition === tradition ? "is-active" : ""}
-                  key={tradition}
-                  type="button"
-                  onClick={() => selectTradition(tradition)}
-                  aria-pressed={activeTradition === tradition}
-                >
-                  {tradition}
-                </button>
-              ))}
-            </div>
+          <div className="portal-eras" aria-label="Десять эпох философии">
+            {canonEras.map((era) => (
+              <a href={`#era-${era.id}`} key={era.id} title={`${era.title}: ${era.dates}`}>
+                <span>{era.index}</span>
+                <strong>{era.title}</strong>
+              </a>
+            ))}
           </div>
         </div>
 
