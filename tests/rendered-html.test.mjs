@@ -34,34 +34,6 @@ async function canonicalSlugs() {
   return [...block[1].matchAll(/"([a-z0-9]+)"/g)].map((match) => match[1]);
 }
 
-function spiralPoints(count) {
-  const samples = [];
-  let totalDistance = 0;
-
-  for (let index = 0; index <= 2400; index += 1) {
-    const t = index / 2400;
-    const angle = -2.5 + t * Math.PI * 6;
-    const radiusX = 47 - 27 * t;
-    const radiusY = 44 - 26 * t;
-    const point = {
-      x: 50 + Math.cos(angle) * radiusX,
-      y: 50 + Math.sin(angle) * radiusY,
-      distance: totalDistance,
-    };
-    const previous = samples.at(-1);
-    if (previous) {
-      totalDistance += Math.hypot((point.x - previous.x) * 1.62, point.y - previous.y);
-      point.distance = totalDistance;
-    }
-    samples.push(point);
-  }
-
-  return Array.from({ length: count }, (_, index) => {
-    const target = (totalDistance * index) / Math.max(1, count - 1);
-    return samples.find((point) => point.distance >= target) ?? samples.at(-1);
-  });
-}
-
 test("renders development preview metadata", async () => {
   const response = await render("/");
 
@@ -105,45 +77,18 @@ test("renders every philosopher with seven ideas and source apparatus", async ()
   }
 });
 
-test("keeps all 100 idle desktop portraits on a non-overlapping spiral", async () => {
-  const slugs = await canonicalSlugs();
-  const landmarks = new Set([
-    "buddha", "confucius", "socrates", "plato", "aristotle", "nagarjuna",
-    "machiavelli", "spinoza", "kant", "nietzsche", "ambedkar", "foucault",
-    "rawls", "byungchulhan",
-  ]);
-  const points = spiralPoints(slugs.length);
-  const viewports = [
-    { width: 901, height: 760, node: 32, landmark: 42 },
-    { width: 1181, height: 760, node: 38, landmark: 50 },
-    { width: 1440, height: 920, node: 44, landmark: 58 },
-    { width: 1920, height: 920, node: 44, landmark: 58 },
-  ];
+test("renders a sparse river overview linked to all ten chronological eras", async () => {
+  const response = await render("/");
+  const html = await response.text();
+  const riverEras = html.match(/class="river-era"/g) ?? [];
+  const eraAnchors = html.match(/id="era-[^"]+"/g) ?? [];
+  const riverFigures = html.match(/class="river-figure/g) ?? [];
 
-  for (const viewport of viewports) {
-    const rectangles = points.map((point, index) => {
-      const size = landmarks.has(slugs[index]) ? viewport.landmark : viewport.node;
-      const x = 34 + (point.x / 100) * (viewport.width - 68);
-      const y = 12 + (point.y / 100) * (viewport.height - 34);
-      return {
-        left: x - size / 2,
-        right: x + size / 2,
-        top: y - size / 2,
-        bottom: y + size / 2,
-      };
-    });
-    const overlaps = [];
-    for (let leftIndex = 0; leftIndex < rectangles.length; leftIndex += 1) {
-      for (let rightIndex = leftIndex + 1; rightIndex < rectangles.length; rightIndex += 1) {
-        const left = rectangles[leftIndex];
-        const right = rectangles[rightIndex];
-        const x = Math.min(left.right, right.right) - Math.max(left.left, right.left);
-        const y = Math.min(left.bottom, right.bottom) - Math.max(left.top, right.top);
-        if (x > 5 && y > 5) overlaps.push([slugs[leftIndex], slugs[rightIndex]]);
-      }
-    }
-    assert.deepEqual(overlaps, [], `${viewport.width}px: portrait collisions`);
-  }
+  assert.equal(riverEras.length, 10, "one river marker per canonical era");
+  assert.equal(eraAnchors.length, 10, "every river marker has a timeline destination");
+  assert.equal(riverFigures.length, 14, "the overview stays readable with landmark figures");
+  assert.match(html, /Река<\/h1>|Река<br\/>/);
+  assert.doesNotMatch(html, /spiral-portraits|spiral-line/);
 });
 
 test("publishes crawler discovery files for all 100 profiles", async () => {

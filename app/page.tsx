@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import {
-  type CSSProperties,
   type MouseEvent,
   useEffect,
   useRef,
   useState,
 } from "react";
 import CanonMap from "@/components/CanonMap";
-import { canonFigures } from "@/lib/canon";
+import { canonEras, canonFigures } from "@/lib/canon";
 import { portraitIndex, portraitThumbnail } from "@/lib/portrait-index";
 
 type QuestionTheme = {
@@ -340,48 +339,35 @@ const landmarkSlugs = new Set([
   "byungchulhan",
 ]);
 
-function createSpiralPoints(count: number) {
-  const samples: Array<{ x: number; y: number; distance: number }> = [];
-  let totalDistance = 0;
+const riverEraPositions = [
+  { x: 17, y: 82 },
+  { x: 33, y: 73 },
+  { x: 51, y: 63 },
+  { x: 62, y: 53 },
+  { x: 55, y: 43 },
+  { x: 40, y: 34 },
+  { x: 30, y: 25 },
+  { x: 42, y: 17 },
+  { x: 61, y: 11 },
+  { x: 77, y: 6 },
+];
 
-  for (let index = 0; index <= 2400; index += 1) {
-    const t = index / 2400;
-    const angle = -2.5 + t * Math.PI * 6;
-    const radiusX = 47 - 27 * t;
-    const radiusY = 44 - 26 * t;
-    const point = {
-      x: 50 + Math.cos(angle) * radiusX,
-      y: 50 + Math.sin(angle) * radiusY,
-      distance: totalDistance,
-    };
-    const previous = samples.at(-1);
-
-    if (previous) {
-      totalDistance += Math.hypot(
-        (point.x - previous.x) * 1.62,
-        point.y - previous.y,
-      );
-      point.distance = totalDistance;
-    }
-
-    samples.push(point);
-  }
-
-  return Array.from({ length: count }, (_, index) => {
-    const target = (totalDistance * index) / Math.max(1, count - 1);
-    const point =
-      samples.find((sample) => sample.distance >= target) ??
-      samples[samples.length - 1];
-
-    return {
-      x: Number(point.x.toFixed(4)),
-      y: Number(point.y.toFixed(4)),
-    };
-  });
-}
-
-const spiralPoints = createSpiralPoints(canonFigures.length);
-const spiralPolyline = spiralPoints.map((point) => `${point.x},${point.y}`).join(" ");
+const riverLandmarkPositions = [
+  { x: 11, y: 86 },
+  { x: 22, y: 79 },
+  { x: 37, y: 70 },
+  { x: 47, y: 66 },
+  { x: 59, y: 58 },
+  { x: 65, y: 49 },
+  { x: 58, y: 39 },
+  { x: 45, y: 30 },
+  { x: 32, y: 21 },
+  { x: 45, y: 14 },
+  { x: 60, y: 9 },
+  { x: 75, y: 14 },
+  { x: 83, y: 8 },
+  { x: 89, y: 4 },
+];
 
 export default function Home() {
   const themePicker = useRef<HTMLDivElement>(null);
@@ -508,42 +494,30 @@ export default function Home() {
       </header>
 
       <section
-        className={`home-v2-hero ${previewFigure ? "has-preview" : ""}`}
+        className={`home-v2-hero river-hero ${previewFigure ? "has-preview" : ""}`}
         id="ask"
       >
-        <div className="home-v2-stage">
-        <svg
-          className="spiral-line"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <polyline points={spiralPolyline} pathLength="1" />
-        </svg>
-
-        <div className="home-v2-core">
-          <p className="home-v2-kicker">100 философов · 700 идей · 2500 лет</p>
+        <div className="river-hero-copy">
+          <p className="river-kicker">ФИЛОСОФСКАЯ КАРТА / 100 философов · 700 идей · 2500 лет</p>
           <h1>
-            100 философов.
+            Река
             <br />
-            Выберите тему.
+            идей.
           </h1>
-          <p className="home-v2-lead">
-            {hasRoute
-              ? `Маршрут готов: ${routeFigures.length} точек зрения. Выберите мыслителя и сравните позиции.`
-              : "Не нужно формулировать идеальный вопрос. Выберите одну тему — карта покажет, с каких идей начать и где философы расходятся."}
+          <p className="river-lead">
+            Не энциклопедия и не один правильный ответ. Это течение из ста мыслителей,
+            в котором можно увидеть, откуда пришёл вопрос и куда расходятся ответы.
           </p>
 
           {hasRoute ? (
-            <div className="home-v2-route" aria-live="polite">
-              <div className="home-v2-route-head">
-                <span>Маршрут по теме · {routeFigures.length}</span>
-                <button type="button" onClick={clearRoute}>
-                  Все темы
-                </button>
+            <div className="river-route" aria-live="polite">
+              <div>
+                <span>Маршрут по теме · {routeFigures.length} позиций</span>
+                <button type="button" onClick={clearRoute}>Все темы</button>
               </div>
-              <p>{query}</p>
-              <div className="home-v2-route-steps" aria-label="Подобранные философы">
+              <strong>{query}</strong>
+              <p>{routeNotice} Здесь нет автоматического «правильного ответа».</p>
+              <div className="river-route-steps" aria-label="Подобранные философы">
                 {routeFigures.map((figure, index) => (
                   <button
                     className={selectedSlug === figure.id ? "is-active" : ""}
@@ -556,19 +530,14 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-              <small>
-                {routeNotice} Это редакционный маршрут, а не автоматический ответ.
-                Начните с любого имени: порядок не означает, что одна позиция
-                «правильнее» другой.
-              </small>
             </div>
           ) : (
-            <div className="home-v2-topic-picker" ref={themePicker}>
-              <div className="home-v2-topic-heading">
-                <strong>Выберите одну тему</strong>
+            <div className="river-topic-picker" ref={themePicker}>
+              <div>
+                <strong>Выберите тему, а не пишите вопрос</strong>
                 <span>18 редакционных маршрутов</span>
               </div>
-              <div className="home-v2-themes" role="group" aria-label="Темы философского маршрута">
+              <div className="river-themes" role="group" aria-label="Темы философского маршрута">
                 {questionThemes.map((theme) => (
                   <button
                     className={activeThemeId === theme.id ? "is-active" : ""}
@@ -582,82 +551,74 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-              <p>
-                Карта не ведёт свободный чат и не выдаёт готовый совет. Она собирает
-                проверяемый маршрут из шести разных философских позиций.
-              </p>
+              <p>Маршрут соберёт 3–6 разных позиций и покажет, где философы спорят.</p>
             </div>
           )}
 
-          {previewFigure ? (
-            <div className="home-v2-touch-selection" aria-live="polite">
-              <span>
-                {previewFigure.index} · {previewFigure.name}
-              </span>
-              <Link href={`/${previewFigure.id}`}>Открыть философа →</Link>
-            </div>
-          ) : null}
+          <a className="river-scroll-link" href="#canon-map">
+            <span>01</span> Пройти реку времени
+          </a>
         </div>
 
-        <div className="spiral-portraits" aria-label="Хронология 100 философов">
-          {canonFigures.map((figure, index) => {
-            const point = spiralPoints[index];
-            const isSelected = previewFigure?.id === figure.id;
-            const isRelevant = highlightedSet.has(figure.id) || isSelected;
-            const hasSelection = highlightedSlugs.length > 0 || Boolean(previewFigure);
-            const isPinned = selectedSlug === figure.id;
-            const isLandmark = landmarkSlugs.has(figure.id);
-            const classes = [
-              "spiral-node",
-              isLandmark ? "is-landmark" : "",
-              isRelevant ? "is-relevant" : "",
-              hasSelection && !isRelevant ? "is-muted" : "",
-              isSelected ? "is-selected" : "",
-              isPinned ? "is-pinned" : "",
-              point.y > 72 ? "is-lower" : "",
-              point.x < 18 ? "is-left-edge" : "",
-              point.x > 82 ? "is-right-edge" : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-            const style = {
-              "--spiral-x": `${point.x}%`,
-              "--spiral-y": `${point.y}%`,
-              "--spiral-delay": `${index * 12}ms`,
-            } as CSSProperties;
+        <div className="river-stage" aria-label="Река времени: десять эпох философии">
+          <svg className="river-water" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M7 91 C20 83 22 77 34 70 C47 62 68 59 64 48 C61 39 36 38 38 29 C40 20 69 24 71 13 C73 7 82 7 94 2" />
+            <path d="M8 92 C21 84 23 78 35 71 C48 63 69 60 65 49 C62 40 37 39 39 30 C41 21 70 25 72 14 C74 8 83 8 95 3" />
+          </svg>
+          <p className="river-direction"><span>сейчас</span><i /> <span>исток</span></p>
 
+          {canonEras.map((era, index) => {
+            const point = riverEraPositions[index];
             return (
-              <Link
-                className={classes}
-                href={`/${figure.id}`}
-                key={figure.id}
-                style={style}
-                aria-label={`${figure.index}. ${figure.name}, ${figure.dates}. Открыть краткую карточку.`}
-                aria-expanded={isSelected}
-                aria-controls="philosopher-preview"
-                onClick={(event) => openPortrait(event, figure.id)}
+              <a
+                className="river-era"
+                href={`#era-${era.id}`}
+                key={era.id}
+                style={{ left: `${point.x}%`, top: `${point.y}%` }}
               >
-                <span className="spiral-node-index">{figure.index}</span>
-                <span className="spiral-node-image" data-initial={figure.name.slice(0, 1)}>
-                  {portraitIndex[figure.id] ? (
-                    <img
-                      src={portraitThumbnail(portraitIndex[figure.id])}
-                      alt=""
-                      width={320}
-                      height={320}
-                      loading={index < 12 ? "eager" : "lazy"}
-                      referrerPolicy="no-referrer"
-                      onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.hidden = true;
-                      }}
-                    />
-                  ) : null}
-                </span>
-              </Link>
+                <span>{era.index}</span>
+                <strong>{era.title}</strong>
+                <small>{era.dates}</small>
+              </a>
             );
           })}
-        </div>
+
+          {canonFigures
+            .filter((figure) => landmarkSlugs.has(figure.id))
+            .map((figure, index) => {
+              const point = riverLandmarkPositions[index % riverLandmarkPositions.length];
+              const isSelected = previewFigure?.id === figure.id;
+              return (
+                <Link
+                  className={`river-figure ${isSelected ? "is-selected" : ""} ${highlightedSet.has(figure.id) ? "is-relevant" : ""}`}
+                  href={`/${figure.id}`}
+                  key={figure.id}
+                  style={{ left: `${point.x}%`, top: `${point.y}%` }}
+                  aria-label={`${figure.name}, ${figure.dates}. Открыть краткую карточку.`}
+                  aria-expanded={isSelected}
+                  aria-controls="philosopher-preview"
+                  onClick={(event) => openPortrait(event, figure.id)}
+                >
+                  <span data-initial={figure.name.slice(0, 1)}>
+                    {portraitIndex[figure.id] ? (
+                      <img
+                        src={portraitThumbnail(portraitIndex[figure.id])}
+                        alt=""
+                        width={320}
+                        height={320}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.hidden = true;
+                        }}
+                      />
+                    ) : null}
+                  </span>
+                  <em>{figure.name}</em>
+                </Link>
+              );
+            })}
         </div>
 
         {previewFigure ? (

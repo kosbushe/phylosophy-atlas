@@ -104,7 +104,7 @@ export default function CanonMap() {
       {filteredEras.length ? (
         <div className="canon-v2-eras" id="chronology">
           {filteredEras.map((era) => (
-            <article className="canon-v2-era" key={era.id}>
+            <article className="canon-v2-era" id={`era-${era.id}`} key={era.id}>
               <header>
                 <span>{era.index}</span>
                 <div>
