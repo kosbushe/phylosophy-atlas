@@ -82,13 +82,14 @@ test("renders an editorial philosophy portal and preserves the complete research
   const html = await response.text();
   const portalStage = html.match(/class="portal-stage"/g) ?? [];
   const eraButtons = html.match(/title="[^"]+: [^"]+"/g) ?? [];
-  const portalFigures = html.match(/class="portal-portrait(?:[ "])/g) ?? [];
+  const portalArtwork = html.match(/class="portal-artwork"/g) ?? [];
   const researchCards = html.match(/class="canon-v2-card"/g) ?? [];
   const researchFilters = html.match(/class="canon-v2-filters"/g) ?? [];
 
   assert.equal(portalStage.length, 1, "the title screen is an editorial portal");
   assert.equal(eraButtons.length, 10, "the portal keeps all ten eras visible");
-  assert.equal(portalFigures.length, 5, "the portal uses a disciplined set of five portrait entrances");
+  assert.equal(portalArtwork.length, 1, "the portal uses one coherent art-directed image");
+  assert.match(html, /\/images\/portal-of-dissent\.webp/);
   assert.equal(researchCards.length, 100, "the complete canon remains available below the portal");
   assert.equal(researchFilters.length, 1, "the full atlas retains its tradition filters");
   assert.match(html, /Сто способов<br\/>\s*<i>увидеть мир\.<\/i>/);

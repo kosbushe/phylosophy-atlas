@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import {
-  type MouseEvent,
   useEffect,
   useRef,
   useState,
 } from "react";
 import CanonMap from "@/components/CanonMap";
 import { canonEras, canonFigures } from "@/lib/canon";
-import { portraitIndex, portraitThumbnail } from "@/lib/portrait-index";
 
 type QuestionTheme = {
   id: string;
@@ -322,27 +320,15 @@ const questionThemes: QuestionTheme[] = [
   },
 ];
 
-const portalFigures = ["buddha", "socrates", "avicenna", "kant", "beauvoir"]
-  .map((id) => canonFigures.find((figure) => figure.id === id))
-  .filter((figure): figure is (typeof canonFigures)[number] => Boolean(figure));
-
-const eraByFigureId = new Map(
-  canonEras.flatMap((era) => era.figures.map((figure) => [figure.id, era] as const)),
-);
-
 export default function Home() {
   const themePicker = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeThemeId, setActiveThemeId] = useState<string | null>(null);
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [topicsOpen, setTopicsOpen] = useState(false);
 
   const activeTheme = questionThemes.find((theme) => theme.id === activeThemeId) ?? null;
   const highlightedSlugs = activeTheme?.philosophers.map((item) => item.slug) ?? [];
-  const highlightedSet = new Set(highlightedSlugs);
-  const previewFigure =
-    canonFigures.find((figure) => figure.id === selectedSlug) ?? null;
   const hasRoute = highlightedSlugs.length > 0;
 
   useEffect(() => {
@@ -361,29 +347,12 @@ export default function Home() {
 
   function selectTheme(theme: QuestionTheme) {
     setActiveThemeId(theme.id);
-    setSelectedSlug(null);
     setTopicsOpen(false);
   }
 
   function clearRoute() {
     setActiveThemeId(null);
-    setSelectedSlug(null);
     setTopicsOpen(false);
-  }
-
-  function openPortrait(event: MouseEvent<HTMLAnchorElement>, slug: string) {
-    if (
-      event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
-    ) {
-      return;
-    }
-
-    event.preventDefault();
-    setSelectedSlug(slug);
   }
 
   function focusQuestion() {
@@ -448,7 +417,7 @@ export default function Home() {
         </button>
       </header>
 
-      <section className={`home-v2-hero portal-hero ${previewFigure ? "has-preview" : ""}`} id="ask">
+      <section className="home-v2-hero portal-hero" id="ask">
         <div className="portal-copy">
           <p className="portal-kicker">ФИЛОСОФСКАЯ КАРТА · 100 ФИЛОСОФОВ · 2500 ЛЕТ РАЗГОВОРА</p>
           <h1>
@@ -487,55 +456,35 @@ export default function Home() {
                 ))}
               </div>
             ) : null}
-            {activeTheme ? <p className="portal-route-note">{activeTheme.question}</p> : null}
+            {activeTheme ? (
+              <div className="portal-route">
+                <p className="portal-route-note">{activeTheme.question}</p>
+                <div className="portal-route-figures" aria-label="Философы в выбранном маршруте">
+                  {activeTheme.philosophers.map((item) => {
+                    const figure = canonFigures.find((candidate) => candidate.id === item.slug);
+                    return figure ? <Link href={`/${figure.id}`} key={figure.id}>{figure.name}</Link> : null;
+                  })}
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 
-        <div className="portal-stage" aria-label="Пять голосов философской карты">
-          <p className="portal-stage-note">ПОРТРЕТЫ — ПУНКТЫ ВХОДА В АТЛАС</p>
-          <div className="portal-portraits">
-            {portalFigures.map((figure, index) => {
-              const era = eraByFigureId.get(figure.id);
-              const isSelected = previewFigure?.id === figure.id;
-              return (
-                <Link
-                  className={[
-                    "portal-portrait",
-                    isSelected ? "is-selected" : "",
-                    highlightedSet.has(figure.id) ? "is-relevant" : "",
-                  ].filter(Boolean).join(" ")}
-                  href={`/${figure.id}`}
-                  key={figure.id}
-                  aria-label={`${figure.name}. Открыть краткую карточку.`}
-                  aria-expanded={isSelected}
-                  aria-controls="philosopher-preview"
-                  onClick={(event) => openPortrait(event, figure.id)}
-                >
-                  <span className="portal-portrait-index">{figure.index}</span>
-                  <span className="portal-portrait-image" data-initial={figure.name.slice(0, 1)}>
-                    {portraitIndex[figure.id] ? (
-                      <img
-                        src={portraitThumbnail(portraitIndex[figure.id])}
-                        alt=""
-                        width={520}
-                        height={690}
-                        loading={index === 0 ? "eager" : "lazy"}
-                        referrerPolicy="no-referrer"
-                        onError={(event) => {
-                          event.currentTarget.onerror = null;
-                          event.currentTarget.hidden = true;
-                        }}
-                      />
-                    ) : null}
-                  </span>
-                  <span className="portal-portrait-copy">
-                    <strong>{figure.name}</strong>
-                    <small>{era?.index} · {figure.tradition}</small>
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
+        <div className="portal-stage" aria-label="Портал философской карты">
+          <p className="portal-stage-note">ПОРТРЕТЫ — НЕ ИЛЛЮСТРАЦИИ, А РАЗНЫЕ ОПТИКИ МИРА</p>
+          <figure className="portal-artwork">
+            <img
+              src="/images/portal-of-dissent.webp"
+              alt="Пять фигур в едином графическом пространстве философской карты"
+              width={1672}
+              height={941}
+            />
+            <figcaption>
+              <span>2500 ЛЕТ</span>
+              <strong>несогласия<br />с очевидным</strong>
+              <small>Будда · Сократ · Авиценна · Кант · де Бовуар</small>
+            </figcaption>
+          </figure>
           <div className="portal-eras" aria-label="Десять эпох философии">
             {canonEras.map((era) => (
               <a href={`#era-${era.id}`} key={era.id} title={`${era.title}: ${era.dates}`}>
@@ -545,59 +494,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
-        {previewFigure ? (
-          <aside
-            className="home-v2-preview-card atlas-preview-card"
-            id="philosopher-preview"
-            aria-label={`Кратко о философе: ${previewFigure.name}`}
-          >
-            <div className="home-v2-preview-meta">
-              <span>{previewFigure.index} / 100</span>
-              <small>{previewFigure.tradition}</small>
-              <button
-                type="button"
-                onClick={() => setSelectedSlug(null)}
-                aria-label="Закрыть карточку"
-              >
-                ×
-              </button>
-            </div>
-            <div className="home-v2-preview-person">
-              <span
-                className="home-v2-preview-portrait"
-                data-initial={previewFigure.name.slice(0, 1)}
-              >
-                {portraitIndex[previewFigure.id] ? (
-                  <img
-                    src={portraitThumbnail(portraitIndex[previewFigure.id])}
-                    alt={`Портрет: ${previewFigure.name}`}
-                    width={240}
-                    height={240}
-                    referrerPolicy="no-referrer"
-                    onError={(event) => {
-                      event.currentTarget.onerror = null;
-                      event.currentTarget.hidden = true;
-                    }}
-                  />
-                ) : null}
-              </span>
-              <div>
-                <strong>{previewFigure.name}</strong>
-                <small className="home-v2-preview-dates">{previewFigure.dates}</small>
-              </div>
-            </div>
-            <p>
-              {activeTheme?.philosophers.find(
-                (item) => item.slug === previewFigure.id,
-              )?.relevance ?? previewFigure.focus}
-            </p>
-            <div className="home-v2-preview-action">
-              <Link href={`/${previewFigure.id}`}>Открыть полную страницу →</Link>
-              <span>Выберите другой портрет — карточка обновится здесь же</span>
-            </div>
-          </aside>
-        ) : null}
 
       </section>
 
