@@ -54,8 +54,8 @@ test("renders the complete 100-figure atlas and 18 editorial routes", async () =
   const response = await render("/");
   const html = await response.text();
   assert.equal(response.status, 200);
-  assert.match(html, /100 философов · 700 идей · 2500 лет/);
-  assert.match(html, /Темы для исследования/);
+  assert.match(html, /100 МЫСЛИТЕЛЕЙ · 700 ИДЕЙ · 10 ЭПОХ · 2500 ЛЕТ/);
+  assert.match(html, /18 маршрутов по вопросам/);
   assert.match(html, /100 ФИЛОСОФОВ \/ ОТБОРНАЯ КАРТА/);
   assert.doesNotMatch(html, /из 50 мыслителей|Хронология 50 философов/);
 });
@@ -77,19 +77,21 @@ test("renders every philosopher with seven ideas and source apparatus", async ()
   }
 });
 
-test("renders all 100 thinkers as a river linked to all ten chronological eras", async () => {
+test("renders all 100 thinkers as an interactive atlas with era and tradition filters", async () => {
   const response = await render("/");
   const html = await response.text();
-  const riverEras = html.match(/class="river-eras"/g) ?? [];
-  const eraAnchors = html.match(/id="era-[^"]+"/g) ?? [];
-  const riverPortraits = html.match(/class="river-portrait(?:[ "])/g) ?? [];
+  const eraSwitcher = html.match(/class="atlas-era-switcher"/g) ?? [];
+  const eraButtons = html.match(/title="[^"]+: [^"]+"/g) ?? [];
+  const atlasFigures = html.match(/class="atlas-figure(?:[ "])/g) ?? [];
+  const traditionRails = html.match(/class="atlas-tradition-rail"/g) ?? [];
 
-  assert.equal(riverEras.length, 1, "the river includes an era navigation strip");
-  assert.equal(eraAnchors.length, 10, "every river marker has a timeline destination");
-  assert.equal(riverPortraits.length, 100, "the full canon flows through the hero river");
-  assert.match(html, /100 философов.<br\/>Ваш вопрос\./);
+  assert.equal(eraSwitcher.length, 1, "the atlas includes an era control strip");
+  assert.equal(eraButtons.length, 10, "every era is directly selectable");
+  assert.equal(atlasFigures.length, 100, "the full canon is visible as clickable atlas cards");
+  assert.equal(traditionRails.length, 1, "the atlas includes a tradition filter");
+  assert.match(html, /Философия —<br\/>это не линия\./);
   assert.doesNotMatch(html, /spiral-portraits|spiral-line/);
-  assert.doesNotMatch(html, /river-portrait-index/);
+  assert.doesNotMatch(html, /river-portrait-index|river-portrait/);
   assert.doesNotMatch(html, /portrait-placeholder\.svg/);
 });
 
