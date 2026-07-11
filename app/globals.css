@@ -6240,16 +6240,6 @@ a {
   z-index: 6;
 }
 
-.river-portrait-index {
-  color: #ef6a59;
-  font-size: 7px;
-  left: 50%;
-  line-height: 1;
-  position: absolute;
-  top: -10px;
-  transform: translateX(-50%);
-}
-
 .river-portrait-image {
   background: #d9d0c0;
   border: 1px solid rgba(241, 236, 226, 0.7);
@@ -6298,11 +6288,6 @@ a {
 .river-portrait.is-landmark {
   --portrait-size: 66px;
   z-index: 12;
-}
-
-.river-portrait.is-landmark .river-portrait-index {
-  font-size: 9px;
-  top: -14px;
 }
 
 .river-portrait.is-relevant {
@@ -6483,15 +6468,54 @@ a {
 }
 
 .river-topic-picker {
-  background: #151410;
-  border: 1px solid rgba(241, 236, 226, 0.22);
+  background: transparent;
+  border: 0;
   margin-top: 22px;
   max-width: 380px;
-  padding: 10px;
+  padding: 0;
+}
+
+.river-topics-trigger {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(241, 236, 226, 0.48);
+  color: rgba(241, 236, 226, 0.88);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--serif);
+  font-size: 16px;
+  gap: 12px;
+  padding: 0 0 7px;
+}
+
+.river-topics-trigger span {
+  color: #ef6a59;
+  font-family: var(--sans);
+  font-size: 18px;
+  line-height: 0.8;
 }
 
 .river-topic-picker .river-themes {
-  margin: 0;
+  background: #151410;
+  border: 1px solid rgba(241, 236, 226, 0.22);
+  margin: 10px 0 0;
+  padding: 10px;
+}
+
+.river-portrait:nth-child(4n + 1) { --portrait-size: 23px; }
+.river-portrait:nth-child(4n + 2) { --portrait-size: 28px; }
+.river-portrait:nth-child(4n + 3) { --portrait-size: 25px; }
+.river-portrait:nth-child(4n + 4) { --portrait-size: 21px; }
+.river-portrait.is-landmark { --portrait-size: 66px; }
+.river-portrait.is-relevant { --portrait-size: 38px; }
+
+@media (max-width: 900px) {
+  .river-portrait.is-landmark { --portrait-size: 48px; }
+}
+
+@media (max-width: 760px) {
+  .river-portrait.is-landmark { --portrait-size: 44px; }
 }
 
 @media (max-width: 760px) {

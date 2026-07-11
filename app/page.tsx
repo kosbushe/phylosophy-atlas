@@ -339,13 +339,18 @@ function riverBaseline(progress: number) {
 function createRiverPortraitPoints(count: number) {
   const lanes = 4;
   const columns = Math.ceil(count / lanes);
+  const laneOrder = [0.2, 2.7, 1.15, 3.65];
 
   return Array.from({ length: count }, (_, index) => {
-    const lane = index % lanes;
+    const lane = laneOrder[index % lanes];
     const column = Math.floor(index / lanes);
     const progress = column / Math.max(1, columns - 1);
-    const x = 5 + progress * 90 + (lane - 1.5) * 0.8;
-    const y = riverBaseline(progress) + (lane - 1.5) * 4.4;
+    const x = 5 + progress * 90 + Math.sin(index * 1.71) * 1.18;
+    const y =
+      riverBaseline(progress) +
+      (lane - 1.85) * 4.25 +
+      Math.sin(index * 2.17) * 1.25 +
+      Math.cos(index * 0.63) * 0.72;
     return { x, y };
   });
 }
@@ -360,6 +365,7 @@ export default function Home() {
   const [activeThemeId, setActiveThemeId] = useState<string | null>(null);
   const [routeNotice, setRouteNotice] = useState<string | null>(null);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [topicsOpen, setTopicsOpen] = useState(false);
 
   const activeTheme = questionThemes.find((theme) => theme.id === activeThemeId) ?? null;
   const highlightedSlugs = activeTheme?.philosophers.map((item) => item.slug) ?? [];
@@ -390,6 +396,7 @@ export default function Home() {
     setRouteNotice(theme.question);
     setQuery(theme.label);
     setSelectedSlug(null);
+    setTopicsOpen(false);
   }
 
   function clearRoute() {
@@ -397,6 +404,7 @@ export default function Home() {
     setRouteNotice(null);
     setSelectedSlug(null);
     setQuery("");
+    setTopicsOpen(true);
     window.setTimeout(() => themePicker.current?.querySelector("button")?.focus(), 0);
   }
 
@@ -417,6 +425,7 @@ export default function Home() {
 
   function focusQuestion() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setTopicsOpen(true);
     themePicker.current?.scrollIntoView({
       behavior: reducedMotion ? "auto" : "smooth",
       block: "center",
@@ -516,20 +525,31 @@ export default function Home() {
             </div>
           ) : (
             <div className="river-topic-picker" ref={themePicker}>
-              <div className="river-themes" role="group" aria-label="Темы философского маршрута">
-                {questionThemes.map((theme) => (
-                  <button
-                    className={activeThemeId === theme.id ? "is-active" : ""}
-                    key={theme.id}
-                    type="button"
-                    onClick={() => selectTheme(theme)}
-                    aria-pressed={activeThemeId === theme.id}
-                    title={theme.question}
-                  >
-                    {theme.label}
-                  </button>
-                ))}
-              </div>
+              <button
+                className="river-topics-trigger"
+                type="button"
+                onClick={() => setTopicsOpen((isOpen) => !isOpen)}
+                aria-expanded={topicsOpen}
+                aria-controls="river-themes"
+              >
+                Темы для исследования <span>{topicsOpen ? "−" : "+"}</span>
+              </button>
+              {topicsOpen ? (
+                <div className="river-themes" id="river-themes" role="group" aria-label="Темы философского маршрута">
+                  {questionThemes.map((theme) => (
+                    <button
+                      className={activeThemeId === theme.id ? "is-active" : ""}
+                      key={theme.id}
+                      type="button"
+                      onClick={() => selectTheme(theme)}
+                      aria-pressed={activeThemeId === theme.id}
+                      title={theme.question}
+                    >
+                      {theme.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
           )}
 
@@ -567,7 +587,6 @@ export default function Home() {
                   aria-controls="philosopher-preview"
                   onClick={(event) => openPortrait(event, figure.id)}
                 >
-                  <span className="river-portrait-index">{figure.index}</span>
                   <span className="river-portrait-image" data-initial={figure.name.slice(0, 1)}>
                     {portraitIndex[figure.id] ? (
                       <img
