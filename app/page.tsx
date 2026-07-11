@@ -322,52 +322,35 @@ const questionThemes: QuestionTheme[] = [
   },
 ];
 
-const landmarkSlugs = new Set([
+const riverLandmarkSlugs = new Set([
   "buddha",
   "confucius",
   "socrates",
-  "plato",
   "aristotle",
-  "nagarjuna",
-  "machiavelli",
-  "spinoza",
   "kant",
   "nietzsche",
-  "ambedkar",
-  "foucault",
-  "rawls",
   "byungchulhan",
 ]);
 
-const riverEraPositions = [
-  { x: 17, y: 82 },
-  { x: 33, y: 73 },
-  { x: 51, y: 63 },
-  { x: 62, y: 53 },
-  { x: 55, y: 43 },
-  { x: 40, y: 34 },
-  { x: 30, y: 25 },
-  { x: 42, y: 17 },
-  { x: 61, y: 11 },
-  { x: 77, y: 6 },
-];
+function riverBaseline(progress: number) {
+  return 79 - progress * 59 + Math.sin(progress * Math.PI * 2.15) * 6;
+}
 
-const riverLandmarkPositions = [
-  { x: 11, y: 86 },
-  { x: 22, y: 79 },
-  { x: 37, y: 70 },
-  { x: 47, y: 66 },
-  { x: 59, y: 58 },
-  { x: 65, y: 49 },
-  { x: 58, y: 39 },
-  { x: 45, y: 30 },
-  { x: 32, y: 21 },
-  { x: 45, y: 14 },
-  { x: 60, y: 9 },
-  { x: 75, y: 14 },
-  { x: 83, y: 8 },
-  { x: 89, y: 4 },
-];
+function createRiverPortraitPoints(count: number) {
+  const lanes = 4;
+  const columns = Math.ceil(count / lanes);
+
+  return Array.from({ length: count }, (_, index) => {
+    const lane = index % lanes;
+    const column = Math.floor(index / lanes);
+    const progress = column / Math.max(1, columns - 1);
+    const x = 5 + progress * 90 + (lane - 1.5) * 0.8;
+    const y = riverBaseline(progress) + (lane - 1.5) * 4.4;
+    return { x, y };
+  });
+}
+
+const riverPortraitPoints = createRiverPortraitPoints(canonFigures.length);
 
 export default function Home() {
   const themePicker = useRef<HTMLDivElement>(null);
@@ -500,13 +483,13 @@ export default function Home() {
         <div className="river-hero-copy">
           <p className="river-kicker">ФИЛОСОФСКАЯ КАРТА / 100 философов · 700 идей · 2500 лет</p>
           <h1>
-            Река
+            100 философов.
             <br />
-            идей.
+            Один ваш вопрос.
           </h1>
           <p className="river-lead">
-            Не энциклопедия и не один правильный ответ. Это течение из ста мыслителей,
-            в котором можно увидеть, откуда пришёл вопрос и куда расходятся ответы.
+            Пройдите по реке времени и посмотрите, как менялись ответы на одни и те же
+            человеческие вопросы.
           </p>
 
           {hasRoute ? (
@@ -560,53 +543,44 @@ export default function Home() {
           </a>
         </div>
 
-        <div className="river-stage" aria-label="Река времени: десять эпох философии">
-          <svg className="river-water" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M7 91 C20 83 22 77 34 70 C47 62 68 59 64 48 C61 39 36 38 38 29 C40 20 69 24 71 13 C73 7 82 7 94 2" />
-            <path d="M8 92 C21 84 23 78 35 71 C48 63 69 60 65 49 C62 40 37 39 39 30 C41 21 70 25 72 14 C74 8 83 8 95 3" />
+        <div className="river-stage" aria-label="Река времени: сто мыслителей в десяти эпохах">
+          <svg className="river-bank" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 88 C16 79 22 80 32 71 C43 60 54 67 64 51 C73 37 72 27 100 8 L100 31 C82 42 82 53 68 66 C53 80 44 74 33 84 C22 94 15 92 0 99 Z" />
           </svg>
-          <p className="river-direction"><span>сейчас</span><i /> <span>исток</span></p>
+          <svg className="river-current" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 93 C16 84 23 85 33 77 C44 66 55 72 66 57 C75 45 75 34 100 17" />
+          </svg>
 
-          {canonEras.map((era, index) => {
-            const point = riverEraPositions[index];
-            return (
-              <a
-                className="river-era"
-                href={`#era-${era.id}`}
-                key={era.id}
-                style={{ left: `${point.x}%`, top: `${point.y}%` }}
-              >
-                <span>{era.index}</span>
-                <strong>{era.title}</strong>
-                <small>{era.dates}</small>
-              </a>
-            );
-          })}
-
-          {canonFigures
-            .filter((figure) => landmarkSlugs.has(figure.id))
-            .map((figure, index) => {
-              const point = riverLandmarkPositions[index % riverLandmarkPositions.length];
+          <div className="river-portraits" aria-label="100 философов в хронологическом порядке">
+            {canonFigures.map((figure, index) => {
+              const point = riverPortraitPoints[index];
               const isSelected = previewFigure?.id === figure.id;
+              const isLandmark = riverLandmarkSlugs.has(figure.id);
               return (
                 <Link
-                  className={`river-figure ${isSelected ? "is-selected" : ""} ${highlightedSet.has(figure.id) ? "is-relevant" : ""}`}
+                  className={[
+                    "river-portrait",
+                    isLandmark ? "is-landmark" : "",
+                    isSelected ? "is-selected" : "",
+                    highlightedSet.has(figure.id) ? "is-relevant" : "",
+                  ].filter(Boolean).join(" ")}
                   href={`/${figure.id}`}
                   key={figure.id}
                   style={{ left: `${point.x}%`, top: `${point.y}%` }}
-                  aria-label={`${figure.name}, ${figure.dates}. Открыть краткую карточку.`}
+                  aria-label={`${figure.index}. ${figure.name}, ${figure.dates}. Открыть краткую карточку.`}
                   aria-expanded={isSelected}
                   aria-controls="philosopher-preview"
                   onClick={(event) => openPortrait(event, figure.id)}
                 >
-                  <span data-initial={figure.name.slice(0, 1)}>
+                  <span className="river-portrait-index">{figure.index}</span>
+                  <span className="river-portrait-image" data-initial={figure.name.slice(0, 1)}>
                     {portraitIndex[figure.id] ? (
                       <img
                         src={portraitThumbnail(portraitIndex[figure.id])}
                         alt=""
                         width={320}
                         height={320}
-                        loading="lazy"
+                        loading={index < 20 ? "eager" : "lazy"}
                         referrerPolicy="no-referrer"
                         onError={(event) => {
                           event.currentTarget.onerror = null;
@@ -615,10 +589,22 @@ export default function Home() {
                       />
                     ) : null}
                   </span>
-                  <em>{figure.name}</em>
+                  {isLandmark ? <em>{figure.name}</em> : null}
                 </Link>
               );
             })}
+          </div>
+
+          <div className="river-eras" aria-label="Эпохи">
+            {canonEras.map((era) => (
+              <a href={`#era-${era.id}`} key={era.id}>
+                <span>{era.index}</span>
+                <strong>{era.title}</strong>
+                <small>{era.dates}</small>
+                <i aria-hidden="true" />
+              </a>
+            ))}
+          </div>
         </div>
 
         {previewFigure ? (

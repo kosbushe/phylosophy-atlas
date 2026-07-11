@@ -6156,6 +6156,324 @@ a {
   }
 }
 
+/* River composition: a single broad current holds the full canon, while the
+   title remains in its own quiet field. */
+.home-v2-hero.river-hero {
+  min-height: 740px;
+}
+
+.river-hero-copy {
+  max-width: 400px;
+  top: 13%;
+  width: min(400px, 31vw);
+  z-index: 30;
+}
+
+.river-hero-copy h1 {
+  font-size: clamp(55px, 4.7vw, 84px);
+  line-height: 0.86;
+}
+
+.river-lead {
+  font-size: 13px;
+  margin-top: 24px;
+  max-width: 355px;
+}
+
+.river-topic-picker,
+.river-route {
+  margin-top: 23px;
+}
+
+.river-themes {
+  gap: 5px;
+  max-width: 370px;
+}
+
+.river-themes button {
+  font-size: 9px;
+  padding: 6px 8px;
+}
+
+.river-stage {
+  inset: 0 2.6vw 0 2.6vw;
+  left: 2.6vw;
+  right: 2.6vw;
+  z-index: 4;
+}
+
+.river-bank,
+.river-current,
+.river-portraits {
+  inset: 0;
+  position: absolute;
+}
+
+.river-bank,
+.river-current {
+  height: 100%;
+  overflow: visible;
+  width: 100%;
+}
+
+.river-bank path {
+  fill: rgba(231, 224, 208, 0.1);
+  stroke: rgba(241, 236, 226, 0.28);
+  stroke-width: 0.15;
+}
+
+.river-current path {
+  fill: none;
+  stroke: #dc4937;
+  stroke-linecap: round;
+  stroke-width: 0.37;
+}
+
+.river-portrait {
+  --portrait-size: 27px;
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: filter 160ms ease, opacity 160ms ease, transform 190ms ease;
+  z-index: 6;
+}
+
+.river-portrait-index {
+  color: #ef6a59;
+  font-size: 7px;
+  left: 50%;
+  line-height: 1;
+  position: absolute;
+  top: -10px;
+  transform: translateX(-50%);
+}
+
+.river-portrait-image {
+  background: #d9d0c0;
+  border: 1px solid rgba(241, 236, 226, 0.7);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(21, 20, 16, 0.94);
+  display: block;
+  height: var(--portrait-size);
+  overflow: hidden;
+  position: relative;
+  width: var(--portrait-size);
+}
+
+.river-portrait-image::before {
+  align-items: center;
+  color: #151410;
+  content: attr(data-initial);
+  display: flex;
+  font-family: var(--serif);
+  font-size: calc(var(--portrait-size) * 0.48);
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+}
+
+.river-portrait-image img {
+  filter: grayscale(1) sepia(0.09) contrast(1.2);
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.river-portrait em {
+  background: rgba(21, 20, 16, 0.88);
+  color: var(--home-paper);
+  font-family: var(--serif);
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1;
+  padding: 4px 5px;
+  white-space: nowrap;
+}
+
+.river-portrait.is-landmark {
+  --portrait-size: 66px;
+  z-index: 12;
+}
+
+.river-portrait.is-landmark .river-portrait-index {
+  font-size: 9px;
+  top: -14px;
+}
+
+.river-portrait.is-relevant {
+  --portrait-size: 38px;
+  z-index: 14;
+}
+
+.river-portrait.is-selected,
+.river-portrait:hover,
+.river-portrait:focus-visible {
+  filter: brightness(1.18);
+  outline: none;
+  transform: translate(-50%, -50%) scale(1.15);
+  z-index: 28;
+}
+
+.river-portrait.is-selected .river-portrait-image {
+  border: 2px solid #ef6a59;
+  box-shadow: 0 0 0 5px rgba(21, 20, 16, 0.95);
+}
+
+.river-eras {
+  bottom: 3.5%;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  left: 2.5%;
+  position: absolute;
+  right: 2.5%;
+  z-index: 8;
+}
+
+.river-eras a {
+  border-left: 1px solid rgba(241, 236, 226, 0.22);
+  color: rgba(241, 236, 226, 0.72);
+  min-height: 62px;
+  padding: 8px 7px 0;
+  position: relative;
+}
+
+.river-eras a:last-child {
+  border-right: 1px solid rgba(241, 236, 226, 0.22);
+}
+
+.river-eras span,
+.river-eras strong,
+.river-eras small {
+  display: block;
+}
+
+.river-eras span {
+  color: #ef6a59;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.river-eras strong {
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.05;
+  margin-top: 5px;
+}
+
+.river-eras small {
+  color: rgba(241, 236, 226, 0.42);
+  font-size: 7px;
+  line-height: 1.2;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.river-eras i {
+  background: #dc4937;
+  border-radius: 50%;
+  height: 5px;
+  left: -3px;
+  position: absolute;
+  top: -3px;
+  width: 5px;
+}
+
+@media (max-width: 900px) {
+  .river-hero-copy {
+    max-width: 370px;
+    width: min(370px, 46vw);
+  }
+
+  .river-portrait {
+    --portrait-size: 21px;
+  }
+
+  .river-portrait.is-landmark {
+    --portrait-size: 48px;
+  }
+
+  .river-portrait em {
+    display: none;
+  }
+
+  .river-eras strong {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-v2-hero.river-hero {
+    min-height: 0;
+  }
+
+  .river-hero-copy {
+    max-width: none;
+    width: 100%;
+  }
+
+  .river-hero-copy h1 {
+    font-size: clamp(50px, 14vw, 68px);
+  }
+
+  .river-stage {
+    background: rgba(241, 236, 226, 0.035);
+    border-top: 1px solid rgba(241, 236, 226, 0.18);
+    height: 178px;
+    margin-top: 25px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .river-bank,
+  .river-current,
+  .river-eras {
+    display: none;
+  }
+
+  .river-portraits {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-items: center;
+    padding: 18px 9px;
+  }
+
+  .river-portrait {
+    display: none;
+    left: auto !important;
+    position: relative;
+    top: auto !important;
+    transform: none;
+  }
+
+  .river-portrait.is-landmark {
+    --portrait-size: 44px;
+    display: flex;
+  }
+
+  .river-portrait.is-landmark .river-portrait-index {
+    display: none;
+  }
+
+  .river-portrait.is-landmark em {
+    display: block;
+    font-size: 10px;
+  }
+
+  .river-portrait.is-selected,
+  .river-portrait:hover,
+  .river-portrait:focus-visible {
+    transform: scale(1.04);
+  }
+}
+
 /* Legal and editorial policy */
 
 .legal-shell {

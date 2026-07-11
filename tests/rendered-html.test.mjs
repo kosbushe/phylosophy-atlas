@@ -77,17 +77,17 @@ test("renders every philosopher with seven ideas and source apparatus", async ()
   }
 });
 
-test("renders a sparse river overview linked to all ten chronological eras", async () => {
+test("renders all 100 thinkers as a river linked to all ten chronological eras", async () => {
   const response = await render("/");
   const html = await response.text();
-  const riverEras = html.match(/class="river-era"/g) ?? [];
+  const riverEras = html.match(/class="river-eras"/g) ?? [];
   const eraAnchors = html.match(/id="era-[^"]+"/g) ?? [];
-  const riverFigures = html.match(/class="river-figure/g) ?? [];
+  const riverPortraits = html.match(/class="river-portrait(?:[ "])/g) ?? [];
 
-  assert.equal(riverEras.length, 10, "one river marker per canonical era");
+  assert.equal(riverEras.length, 1, "the river includes an era navigation strip");
   assert.equal(eraAnchors.length, 10, "every river marker has a timeline destination");
-  assert.equal(riverFigures.length, 14, "the overview stays readable with landmark figures");
-  assert.match(html, /Река<\/h1>|Река<br\/>/);
+  assert.equal(riverPortraits.length, 100, "the full canon flows through the hero river");
+  assert.match(html, /100 философов.<br\/>Один ваш вопрос\./);
   assert.doesNotMatch(html, /spiral-portraits|spiral-line/);
 });
 
