@@ -2,47 +2,17 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import {
-  canonEras,
-  canonTraditions,
-  type CanonFigure,
-} from "@/lib/canon";
+import { canonEras } from "@/lib/canon";
 import { portraitIndex, portraitThumbnail } from "@/lib/portrait-index";
 
-function searchableText(figure: CanonFigure) {
-  return [
-    figure.name,
-    figure.nativeName,
-    figure.dates,
-    figure.tradition,
-    figure.region,
-    figure.focus,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase("ru");
-}
-
 export default function CanonMap() {
-  const [query, setQuery] = useState("");
-  const [activeTradition, setActiveTradition] = useState<(typeof canonTraditions)[number]>(
-    "Все",
-  );
+  const [activeEra, setActiveEra] = useState("all");
 
   const filteredEras = useMemo(() => {
-    const needle = query.trim().toLocaleLowerCase("ru");
-
-    return canonEras
-      .map((era) => ({
-        ...era,
-        figures: era.figures.filter((figure) => {
-          const matchesTradition =
-            activeTradition === "Все" || figure.tradition === activeTradition;
-          return matchesTradition && (!needle || searchableText(figure).includes(needle));
-        }),
-      }))
-      .filter((era) => era.figures.length > 0);
-  }, [activeTradition, query]);
+    return activeEra === "all"
+      ? canonEras
+      : canonEras.filter((era) => era.id === activeEra);
+  }, [activeEra]);
 
   const visibleCount = filteredEras.reduce((total, era) => total + era.figures.length, 0);
 
@@ -53,44 +23,28 @@ export default function CanonMap() {
         <div>
           <h2>
             Мыслители и
-            <br />река времени.
+            <br />исторические эпохи.
           </h2>
           <span>
-            Это не полный список философии, а отобранные фигуры из разных традиций.
-            Ищите по имени, идее или эпохе — и начинайте с главного вопроса каждого.
+            Не один поток и не один ответ. Выберите эпоху и увидите, какие мыслители
+            формировали её вопросы, языки и споры.
           </span>
         </div>
       </header>
 
       <div className="canon-v2-toolbar">
-        <label className="canon-v2-search">
-          <span>Найти философа или идею</span>
-          <div>
-            <i aria-hidden="true">⌕</i>
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Имя, традиция или главный вопрос…"
-            />
-            {query ? (
-              <button type="button" onClick={() => setQuery("")} aria-label="Очистить поиск">
-                ×
-              </button>
-            ) : null}
-          </div>
-        </label>
+        <p className="canon-v2-filter-label">Выберите историческую эпоху. Повторное нажатие покажет все.</p>
 
-        <div className="canon-v2-filters" role="group" aria-label="Фильтр по традиции">
-          {canonTraditions.map((tradition) => (
+        <div className="canon-v2-filters" role="group" aria-label="Фильтр по историческим эпохам">
+          {canonEras.map((era) => (
             <button
-              className={activeTradition === tradition ? "is-active" : ""}
+              className={activeEra === era.id ? "is-active" : ""}
               type="button"
-              key={tradition}
-              onClick={() => setActiveTradition(tradition)}
-              aria-pressed={activeTradition === tradition}
+              key={era.id}
+              onClick={() => setActiveEra((current) => current === era.id ? "all" : era.id)}
+              aria-pressed={activeEra === era.id}
             >
-              {tradition}
+              {era.index}. {era.title}
             </button>
           ))}
         </div>
@@ -163,12 +117,11 @@ export default function CanonMap() {
         <div className="canon-v2-empty">
           <span>∅</span>
           <h3>Ничего не найдено</h3>
-          <p>Попробуйте другое имя, идею или снимите фильтр традиции.</p>
+          <p>Попробуйте выбрать другую историческую эпоху.</p>
           <button
             type="button"
             onClick={() => {
-              setQuery("");
-              setActiveTradition("Все");
+              setActiveEra("all");
             }}
           >
             Показать всех

@@ -1,7 +1,9 @@
 import type { Philosopher } from "@/lib/philosophers";
 
 type Pair = readonly [title: string, text: string];
-type MilestoneSeed = readonly [date: string, title: string, text: string];
+type MilestoneSeed =
+  | readonly [date: string, title: string, text: string]
+  | readonly [date: string, age: string, title: string, text: string];
 type SourceSeed = readonly [label: string, detail: string, href: string];
 
 export type ProfileSeed = Omit<
@@ -20,7 +22,20 @@ export function defineProfile(seed: ProfileSeed): Philosopher {
     color: "#d43b2d",
     mapPosition: "50%",
     ideas: seed.ideas.map(([title, text]) => ({ title, text })),
-    milestones: seed.milestones.map(([date, title, text]) => ({ date, title, text })),
+    milestones: seed.milestones.map((milestone) =>
+      milestone.length === 4
+        ? {
+            date: milestone[0],
+            age: milestone[1],
+            title: milestone[2],
+            text: milestone[3],
+          }
+        : {
+            date: milestone[0],
+            title: milestone[1],
+            text: milestone[2],
+          },
+    ),
     distortion: {
       myth: seed.distortion[0],
       correction: seed.distortion[1],

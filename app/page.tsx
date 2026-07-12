@@ -320,6 +320,19 @@ const questionThemes: QuestionTheme[] = [
   },
 ];
 
+const heroFigureLinks = [
+  { id: "nietzsche", name: "Фридрих Ницше", x: 82, y: 15, size: 12 },
+  { id: "beauvoir", name: "Симона де Бовуар", x: 69, y: 20, size: 11 },
+  { id: "buddha", name: "Будда", x: 87, y: 35, size: 11 },
+  { id: "kant", name: "Иммануил Кант", x: 62, y: 39, size: 13 },
+  { id: "confucius", name: "Конфуций", x: 51, y: 49, size: 12 },
+  { id: "avicenna", name: "Авиценна", x: 75, y: 50, size: 13 },
+  { id: "socrates", name: "Сократ", x: 56, y: 74, size: 16 },
+  { id: "spinoza", name: "Бенедикт Спиноза", x: 68, y: 65, size: 13 },
+  { id: "arendt", name: "Ханна Арендт", x: 83, y: 73, size: 16 },
+  { id: "sartre", name: "Жан-Поль Сартр", x: 94, y: 55, size: 10 },
+] as const;
+
 export default function Home() {
   const themePicker = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -372,7 +385,10 @@ export default function Home() {
     <main className="home-v2-shell">
       <header className="home-v2-header">
         <Link className="home-v2-wordmark" href="/" aria-label="Философская карта, главная">
-          Философская карта
+          <span>
+            <strong>100 ФИЛОСОФОВ</strong>
+            <small>ИДЕИ, КОТОРЫЕ ИЗМЕНИЛИ МЫШЛЕНИЕ</small>
+          </span>
         </Link>
         <nav
           className={`home-v2-nav ${menuOpen ? "is-open" : ""}`}
@@ -385,11 +401,14 @@ export default function Home() {
           <a href="#ask" onClick={() => setMenuOpen(false)}>
             Темы
           </a>
+          <a href="#canon-map" onClick={() => setMenuOpen(false)}>
+            Школы
+          </a>
           <a href="#chronology" onClick={() => setMenuOpen(false)}>
             Хронология
           </a>
           <a href="#about" onClick={() => setMenuOpen(false)}>
-            О проекте
+            Как читать
           </a>
         </nav>
         <button
@@ -401,7 +420,7 @@ export default function Home() {
           }}
         >
           <span aria-hidden="true">⌕</span>
-          Темы
+          Поиск по сайту
         </button>
         <button
           ref={menuButton}
@@ -418,21 +437,47 @@ export default function Home() {
       </header>
 
       <section className="home-v2-hero portal-hero" id="ask">
+        <figure className="portal-artwork portal-background" aria-hidden="true">
+          <img
+            src="/images/philosophy-chronicle-collage-fullbleed.webp"
+            alt=""
+            width={1672}
+            height={941}
+          />
+        </figure>
+
+        <div className="portal-figure-links" aria-label="Философы на титульной странице">
+          {heroFigureLinks.map((figure) => (
+            <Link
+              className="portal-figure-link"
+              href={`/${figure.id}`}
+              key={figure.id}
+              aria-label={`Открыть страницу: ${figure.name}`}
+              style={{
+                left: `${figure.x}%`,
+                top: `${figure.y}%`,
+                width: `${figure.size}%`,
+              }}
+            >
+              <span>{figure.name}</span>
+            </Link>
+          ))}
+        </div>
+
         <div className="portal-copy">
-          <p className="portal-kicker">ФИЛОСОФСКАЯ КАРТА · 100 ФИЛОСОФОВ · 2500 ЛЕТ РАЗГОВОРА</p>
+          <p className="portal-kicker">СОВРЕМЕННЫЙ ГИД ПО ФИЛОСОФИИ</p>
           <h1>
-            Сто способов
-            <br />
-            <i>увидеть мир.</i>
+            <span>100</span>
+            <strong>ФИЛОСОФОВ</strong>
           </h1>
           <p className="portal-lead">
-            Не энциклопедия имён. Пространство, в котором Будда, Сократ, Авиценна,
-            Кант и де Бовуар спорят о том, как жить, любить, бояться и быть свободным.
+            Понятный путеводитель по главным мыслителям, <b>идеям и школам</b> —
+            от античности до современности.
           </p>
 
           <div className="portal-actions">
-            <a href="#canon-map">Войти в атлас <span>100 мыслителей →</span></a>
-            <button type="button" onClick={focusQuestion}>Выбрать вопрос <span>18 маршрутов</span></button>
+            <a href="#canon-map">Начать путешествие <span>100 мыслителей →</span></a>
+            <button type="button" onClick={focusQuestion}>Смотреть карту <span>18 маршрутов</span></button>
           </div>
 
           <div className="portal-topic-picker" ref={themePicker}>
@@ -471,20 +516,6 @@ export default function Home() {
         </div>
 
         <div className="portal-stage" aria-label="Портал философской карты">
-          <p className="portal-stage-note">ПОРТРЕТЫ — НЕ ИЛЛЮСТРАЦИИ, А РАЗНЫЕ ОПТИКИ МИРА</p>
-          <figure className="portal-artwork">
-            <img
-              src="/images/portal-of-dissent.webp"
-              alt="Пять фигур в едином графическом пространстве философской карты"
-              width={1672}
-              height={941}
-            />
-            <figcaption>
-              <span>2500 ЛЕТ</span>
-              <strong>несогласия<br />с очевидным</strong>
-              <small>Будда · Сократ · Авиценна · Кант · де Бовуар</small>
-            </figcaption>
-          </figure>
           <div className="portal-eras" aria-label="Десять эпох философии">
             {canonEras.map((era) => (
               <a href={`#era-${era.id}`} key={era.id} title={`${era.title}: ${era.dates}`}>
@@ -499,7 +530,7 @@ export default function Home() {
 
       <section className="home-v2-bridge" id="thinkers">
         <p>Не ищите одного правильного ответа.</p>
-        <h2>Посмотрите, где мыслители соглашаются, спорят и меняют сам вопрос.</h2>
+        <h2>Посмотрите, где мыслители соглашаются, спорят или меняют сам вопрос.</h2>
         <div>
           <span>18</span>
           <small>тематических маршрутов</small>

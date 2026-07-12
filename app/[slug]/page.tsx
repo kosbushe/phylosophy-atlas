@@ -43,7 +43,7 @@ export default async function PhilosopherPage({
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: `${philosopher.name}: семь ключевых идей`,
+    headline: `${philosopher.name}: семь главных мыслей`,
     description: philosopher.oneLine,
     inLanguage: "ru",
     mainEntity: {

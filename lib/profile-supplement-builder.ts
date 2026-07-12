@@ -8,6 +8,9 @@ type SourceSeed = readonly [label: string, detail: string, href: string];
 export type SupplementProfileSeed = {
   slug: string;
   name: string;
+  nameGenitive?: string;
+  birthPlace?: Philosopher["birthPlace"];
+  restingPlace?: Philosopher["restingPlace"];
   nativeName: string;
   dates: string;
   century: string;
@@ -73,6 +76,9 @@ export function defineSupplementProfile(seed: SupplementProfileSeed): Philosophe
     slug: seed.slug,
     index: "",
     name: seed.name,
+    nameGenitive: seed.nameGenitive,
+    birthPlace: seed.birthPlace,
+    restingPlace: seed.restingPlace,
     nativeName: seed.nativeName,
     dates: seed.dates,
     century: seed.century,
