@@ -34,7 +34,7 @@ async function canonicalSlugs() {
   return [...block[1].matchAll(/"([a-z0-9]+)"/g)].map((match) => match[1]);
 }
 
-test("renders development preview metadata", async () => {
+test("renders production metadata without development-only preview tags", async () => {
   const response = await render("/");
 
   assert.equal(response.status, 200);
@@ -42,7 +42,30 @@ test("renders development preview metadata", async () => {
     response.headers.get("content-type") ?? "",
     /^text\/html\b/i,
   );
-  assert.match(await response.text(), developmentPreviewMeta);
+  const html = await response.text();
+  assert.doesNotMatch(html, developmentPreviewMeta);
+  assert.match(html, /<meta property="og:image" content="https:\/\/philosophy-atlas\.ru\/og\.png"/);
+  assert.match(html, /hrefLang="en" href="https:\/\/philosophy-atlas\.ru\/en"/);
+});
+
+test("renders four localized editorial indexes", async () => {
+  const cases = [
+    ["/en", "100 THINKERS"],
+    ["/fr", "100 PENSEURS"],
+    ["/es", "100 PENSADORES"],
+    ["/de", "100 DENKER"],
+  ];
+
+  for (const [path, headline] of cases) {
+    const response = await render(path);
+    const html = await response.text();
+
+    assert.equal(response.status, 200, `${path}: route status`);
+    assert.match(html, new RegExp(headline), `${path}: localized headline`);
+    assert.match(html, /class="language-switcher"/, `${path}: language switcher`);
+    assert.match(html, /BETA/, `${path}: honest translation status`);
+    assert.match(html, /property="og:image" content="https:\/\/philosophy-atlas\.ru\/og\.png"/, `${path}: social image`);
+  }
 });
 
 test("renders the complete 100-figure atlas and 18 editorial routes", async () => {
@@ -460,7 +483,11 @@ test("publishes crawler discovery files for all 100 profiles", async () => {
   assert.equal(robotsResponse.status, 200);
   assert.match(robots, /Sitemap: https:\/\/philosophy-atlas\.ru\/sitemap\.xml/i);
   assert.equal(sitemapResponse.status, 200);
-  assert.equal((sitemap.match(/<url>/g) ?? []).length, 102);
+  assert.equal((sitemap.match(/<url>/g) ?? []).length, 106);
+  assert.match(sitemap, /https:\/\/philosophy-atlas\.ru\/en/);
+  assert.match(sitemap, /https:\/\/philosophy-atlas\.ru\/fr/);
+  assert.match(sitemap, /https:\/\/philosophy-atlas\.ru\/es/);
+  assert.match(sitemap, /https:\/\/philosophy-atlas\.ru\/de/);
   assert.match(sitemap, /https:\/\/philosophy-atlas\.ru\/byungchulhan/);
   assert.equal(llmsResponse.status, 200);
   assert.match(llmsResponse.headers.get("content-type") ?? "", /^text\/plain/);

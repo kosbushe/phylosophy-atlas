@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import CanonMap from "@/components/CanonMap";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { canonEras, canonFigures } from "@/lib/canon";
 
 type QuestionTheme = {
@@ -411,17 +412,20 @@ export default function Home() {
             Как читать
           </a>
         </nav>
-        <button
-          className="home-v2-search-trigger"
-          type="button"
-          onClick={() => {
-            setMenuOpen(false);
-            focusQuestion();
-          }}
-        >
-          <span aria-hidden="true">⌕</span>
-          Поиск по сайту
-        </button>
+        <div className="home-v2-header-tools">
+          <LanguageSwitcher />
+          <button
+            className="home-v2-search-trigger"
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              focusQuestion();
+            }}
+          >
+            <span aria-hidden="true">⌕</span>
+            Поиск
+          </button>
+        </div>
         <button
           ref={menuButton}
           className={`home-v2-menu ${menuOpen ? "is-open" : ""}`}

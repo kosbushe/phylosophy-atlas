@@ -10,6 +10,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
+    ...["en", "fr", "es", "de"].map((locale) => ({
+      url: `${origin}/${locale}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })),
     ...philosophers.map((philosopher) => ({
       url: `${origin}/${philosopher.slug}`,
       changeFrequency: "monthly" as const,

@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     "Интерактивная карта 100 философов мира: 700 идей, современные примеры, проверенные цитаты, хронология и академические источники.",
   alternates: {
     canonical: "/",
+    languages: { ru: "/", en: "/en", fr: "/fr", es: "/es", de: "/de" },
   },
   openGraph: {
     type: "website",
@@ -31,13 +32,17 @@ export const metadata: Metadata = {
     title: "Философская карта · 100 философов",
     description:
       "100 философов, 700 идей, современные примеры, проверенные цитаты и академические источники.",
+    images: [{ url: "/og.png", width: 1731, height: 909, alt: "Philosophy Atlas · 100 thinkers, 700 ideas, 5 languages" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Философская карта · 100 философов",
+    description: "100 философов, 700 идей и пять языковых версий.",
+    images: ["/og.png"],
   },
   robots: {
     index: true,
     follow: true,
-  },
-  other: {
-    "codex-preview": "development",
   },
   icons: {
     icon: "/favicon.svg",
